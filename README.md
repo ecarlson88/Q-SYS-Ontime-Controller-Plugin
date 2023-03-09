@@ -8,15 +8,14 @@ In this initial release, V1.0 of this plugin supports Play, Pause, Reload Event,
 
 ## Screenshots
 
---![Plugin2](https://raw.githubusercontent.com/ecarlson88/Q-SYS-IFTTT-Webhook-Plugin/main/Send-Values-Off.png)
---![Plugin](https://raw.githubusercontent.com/ecarlson88/Q-SYS-IFTTT-Webhook-Plugin/main/Send-Values-On.png)
+--![Plugin](https://raw.githubusercontent.com/ecarlson88/Q-SYS-ontime-Controller-Plugin/blob/main/Ontime_Plugin.png)
 
 
 
 
 
 
---![IFTTT](https://raw.githubusercontent.com/ecarlson88/Q-SYS-IFTTT-Webhook-Plugin/main/IFTTT.png)
+--![Ontime](https://raw.githubusercontent.com/ecarlson88/Q-SYS-ontime-Controller-Plugin/blob/main/ontime_app.png)
 
 
 
