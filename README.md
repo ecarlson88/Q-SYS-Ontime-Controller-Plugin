@@ -1,6 +1,8 @@
 # Ontime Controller Plugin V1.0
 
-## At the moment this plugin will only work with ontime V1.X releases. Changes to the API in the upcoming V2 will cause a good portion of this plugin to stop functioning. Work is being done to update the plugin to support ontime V2 and the added features being in their upcoming API.
+## At the moment this plugin will only work with ontime V1.X releases. Changes to the API in the upcoming V2 will cause a good portion of this plugin to stop functioning. 
+
+## Work is being done to update the plugin to support ontime V2 and the added features being added in their upcoming API. Testing still underway
 
 ## Overview
 ### Description:
