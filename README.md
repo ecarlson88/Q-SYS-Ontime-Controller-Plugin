@@ -1,26 +1,10 @@
-# Ontime Controller Plugin V1.0
+# Ontime Controller Plugin V2.0 Released
 
-## At the moment this plugin will only work with ontime V1.X releases. Changes to the API in the upcoming V2 will cause a good portion of this plugin to stop functioning. 
-
-## Work is being done to update the plugin to support ontime V2 and the added features being added in their upcoming API. Testing still underway
+##Due to the limited functions in the HTTP API work is being done to rewrite the plugin using the more robust websocket API
 
 ## Overview
 ### Description:
 This repo contains a Q-SYS Plugin for control of the ontime stage timer via its published HTTP API.
-
-In this initial release, V1.0 of this plugin supports Play, Pause, Reload Event, Next Event, and Previous Event controls. In addition to those controls the plugin has polling of Event Title, Time Remaining, and Presenter fields.
-
-## Screenshots
-
---![Plugin](https://github.com/ecarlson88/Q-SYS-ontime-Controller-Plugin/blob/main/Ontime_Plugin.png)
-
-
-
-
-
-
---![Ontime](https://github.com/ecarlson88/Q-SYS-ontime-Controller-Plugin/blob/main/ontime_app.png)
-
 
 
 ## Instructions
@@ -48,14 +32,23 @@ Debug Window available to be turned on in properties window
 - Previous
 - Restart
 ### Output
+- Event Index (Value)
+- Event Total (Value) 
+- Event Notes (String)
+- Event Subtitles (String)
 - Event Title (String)
+- Next Event Notes (String)
+- Next Event Subtitles (String)
+- Next Event Title (String)
 - Presenter (String)
+- Next Presenter (String)
+- On Air (True/False)
 - Time Remaining (String)
 
 ## Additional Information
 ### Tested On:
-Q-SYS Designer 9.5/9.6
+Q-SYS Designer 9.5-9.9.1
 ### License:
 MIT
 ### Support:
-THIS IS AN EALRY RELEASE! There are most likely bugs and not all ontime HTTP API features are supported at this time. If you find any issues please reach out, but also please test thoroughly  before using in any production environments
+If you find any issues please reach out, but also please test thoroughly  before using in any production environments
