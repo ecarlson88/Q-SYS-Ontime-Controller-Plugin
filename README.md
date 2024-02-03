@@ -1,6 +1,6 @@
 # Ontime Controller Plugin V2.0 Released
 
-##Due to the limited functions in the HTTP API work is being done to rewrite the plugin using the more robust websocket API
+##Due to the limited functions in the HTTP API work is being done to rewrite the plugin using the more robust websocket API. V3 Work can be found in .BETA Folder if you want to dive in.
 
 ## Overview
 ### Description:
