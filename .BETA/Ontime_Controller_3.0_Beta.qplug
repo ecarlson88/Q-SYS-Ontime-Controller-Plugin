@@ -268,6 +268,14 @@ PluginInfo = {
       PinStyle = "Output",
       Count = 1
     })
+    table.insert(ctrls, {
+      Name = "Set_OnAir",
+      ControlType = "Button",
+      ButtonType = "Toggle",
+      Count = 1,
+      UserPin = true,
+      PinStyle = "Input"
+    })
     return ctrls
   end
   
@@ -503,7 +511,6 @@ PluginInfo = {
         HTextAlign = "Left"
         }
       layout["On_Air"] = {
-        PrettyName="On Air",
         Style="LED",
         Color={10,67,185},
         OffColor={64,64,64},
@@ -511,7 +518,16 @@ PluginInfo = {
         UnlinkOffColor=true,
         Position={120,70},
         Size={20,20},
-        CornerRadius=8
+        CornerRadius= 8
+        }
+      layout["Set_OnAir"] = {
+        PrettyName="On Air",
+        Style="button",
+        Color={0,0,0,0},
+        Position={120,70},
+        Size={20,20},
+        ZOrder = 200,
+        CornerRadius = 8
         }
     elseif CurrentPage == "Event" then
       table.insert(graphics,{ --Current Event background
@@ -1157,6 +1173,24 @@ Controls.Restart.EventHandler = function (Restart)
       ws:Write(restart_command, false)
       print("sending", restart_command)
    end
+Controls["Set_OnAir"].EventHandler = function ()
+    if Controls["Set_OnAir"].Boolean
+    then
+    OnAirms= {
+       type = "set-onair",
+       payload = true
+    }
+    else
+    OnAirms = {
+      type = "set-onair",
+      payload = false
+    }
+   end
+    -- Convert the Lua table to a JSON string
+    local OnAir_command = json.encode(OnAirms)
+    ws:Write(OnAir_command, false)
+    print("sending", OnAir_command)
+  end
 ---vvvvvvvFlashing Blink Logic :|
 function flashButton()
   Controls.BlinkBlink.Value = (Controls.BlinkBlink.Value == 1) and 0 or 1
