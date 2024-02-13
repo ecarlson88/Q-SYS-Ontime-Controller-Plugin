@@ -1222,8 +1222,10 @@ ws.Data = function ( ws, data) ---All of feedback
         blanktime = responsetbl.payload.timerMessage.visible
         if blanktime == true then  
           Controls["T-MessageVis"].Value = true
+          Controls["Current T-Message"].IsInvisible = true
         else
           Controls["T-MessageVis"].Value = false
+          Controls["Current T-Message"].IsInvisible = false
         end
         -- What is Ontime Current Time Message
         timermes = responsetbl.payload.timerMessage.text
@@ -1239,8 +1241,10 @@ ws.Data = function ( ws, data) ---All of feedback
         blanktime = responsetbl.payload.publicMessage.visible
         if blanktime == true then  
           Controls["P-MessageVis"].Value = true
+          Controls["Current P-Message"].IsInvisible = true
         else
           Controls["P-MessageVis"].Value = false
+          Controls["Current P-Message"].IsInvisible = false
         end
       end
   end
@@ -1419,13 +1423,11 @@ Controls["T-MessageVis"].EventHandler = function (PresTextVis)
       payload = true
     }
     Controls["Current T-Message"].IsInvisible = true
-    Controls["Current T-Message"].IsInvisible = true
     else
       TVCMD= {
       type = "set-timer-message-visible",
       payload = false
     }
-    Controls["Current T-Message"].IsInvisible = false
     Controls["Current T-Message"].IsInvisible = false
     end
     -- Convert the Lua table to a JSON string
@@ -1441,13 +1443,11 @@ Controls["P-MessageVis"].EventHandler = function (PubTextVis)
       payload = true
     }
     Controls["Current P-Message"].IsInvisible = true
-    Controls["Current P-Message"].IsInvisible = true
     else
       pubTVCMD= {
       type = "set-public-message-visible",
       payload = false
     }
-    Controls["Current P-Message"].IsInvisible = false
     Controls["Current P-Message"].IsInvisible = false
     end
     -- Convert the Lua table to a JSON string
