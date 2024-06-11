@@ -1017,109 +1017,118 @@ if Controls then
 
   --Variables--
 
-  IP = Controls.ontime_IP
-  WS_Port = Controls.Port.String
-  delay = Timer.New()
-  datadelay = Timer.New()
-  json = require("rapidjson")
-  ws = WebSocket.New()
+ IP = Controls.ontime_IP
+ WS_Port = Controls.Port.String
+ delay = Timer.New()
+ polltimer = Timer.New()
+ json = require("rapidjson")
+ ws = WebSocket.New()
 
 
-IP.EventHandler = function()
+ IP.EventHandler = function()
     if IP.String == "" then  -- If the user enters blank IP stop communication
       Disconnect()
     else
       Connect()  -- Otherwise Call Connect when the IPAddress EventHandler is called
     end
  end
-function Connect()
+ function Connect()
   if IP ~= "" then
     ws:Connect("ws",IP.String,"/ws", WS_Port)
     --print("Websocket Connect:",IP.String,"/ws", WS_Port)
   end
  end
-ws.Connected = function()
+ ws.Connected = function()
     print("Websocket Connected:"..IP.String.."/ws:"..WS_Port)
-  end
-function Disconnect()
+    polltimer:Start(.33)
+ end
+ function Disconnect()
    ws:Close()
    stopFlashTimer()
+   polltimer:Stop()
    print("Disconnected")
-end
-ws.Data = function ( ws, data) ---All of feedback
-    print("Data", data)
+ end
+ ws.Data = function(ws, data) ---All of feedback
     response = data
     responsetbl = json.decode(response)
-    if responsetbl.type == "ontime-log"
-        then
-            --print ("Command Issued")
-        elseif
-        responsetbl.type == "client-name"
-        then
-            print("Initial Connection Feedback Recieved")
 
-      elseif responsetbl.type == "ontime" then
-                  --- Playback Modes
-        Playback = responsetbl.payload.playback
-      if Playback == "roll" then
-            Controls.Neg_Time_Remaining.String = "ROLL"
-            Controls.Time_Remaining.String = ""
-      elseif
-          Playback == "stop" then
-            Controls.Neg_Time_Remaining.String = ""
-            Controls.Time_Remaining.String = "-- : -- : --"
-      elseif Playback ~= "roll" or Playback ~= "stop" then
-         Timer = responsetbl.payload.timer.current
-            str = Timer
-            len = string.len(str)
+    if responsetbl.type == "ontime-log" then
+            LogFB(data)
+    elseif responsetbl.type == "ontime-timer" then
+            TimerFB(data)
+    elseif responsetbl.type == "poll" then
+            OntimeFB(data)
+    end
+ end
+ function LogFB(data)
+    print("LOG DATA", data)
+    --Error checking/successful command stuff goes here
+    --print ("Command Issued")
+ end
+ function TimerFB(data)
+    --print("TIMER DATA", data)
+    --- Playback Modes
+    Playback = responsetbl.payload.playback
+    if Playback == "roll" then
+        Controls.Neg_Time_Remaining.String = "ROLL"
+        Controls.Time_Remaining.String = ""
+    elseif
+      Playback == "stop" then
+        Controls.Neg_Time_Remaining.String = ""
+        Controls.Time_Remaining.String = "-- : -- : --"
+    else
+        Timer = responsetbl.payload.current
+        local str = Timer
+        local len = string.len(str)
+        print("Timer="..Timer)
+        print("String Length="..len)
           if string.sub(str, 1, 1) ~= "-" then
-            TimerNeg = false
-          if len == 3 then
-            Timer = 0000
-          elseif len == 4 then
-            local firstOne = string.sub(str, 1, 1)
-            Timer = firstOne -- Output: "1"
-          elseif len == 5 then
-            local firstTwo = string.sub(str, 1, 2)
-            Timer = firstTwo -- Output: "12"
-          elseif len == 6 then
-            local firstThree = string.sub(str, 1, 3)
-            Timer = firstThree -- Output: "123"
-          elseif len == 7 then
-            local firstFour = string.sub(str, 1, 4)
-            Timer = firstFour -- Output: "1234"
-          elseif len == 8 then
-            local firstFive = string.sub(str, 1, 5)
-            Timer = firstFive -- Output: "12345"
-          elseif len == 9 then
-            local firstSix = string.sub(str, 1, 6)
-            Timer = firstSix -- Output: "123456"
-          end
+           TimerNeg = false
+
+            if len == 3 then
+              Timer = 0000
+            elseif len == 4 then
+              local firstOne = string.sub(str, 1, 1)
+              Timer = firstOne -- Output: "1"
+            elseif len == 5 then
+              local firstTwo = string.sub(str, 1, 2)
+              Timer = firstTwo -- Output: "12"
+            elseif len == 6 then
+              local firstThree = string.sub(str, 1, 3)
+              Timer = firstThree -- Output: "123"
+            elseif len == 7 then
+              local firstFour = string.sub(str, 1, 4)
+              Timer = firstFour -- Output: "1234"
+            elseif len == 8 then
+              local firstFive = string.sub(str, 1, 5)
+              Timer = firstFive -- Output: "12345"
+            elseif len == 9 then
+              local firstSix = string.sub(str, 1, 6)
+              Timer = firstSix -- Output: "123456"
+            end
+            
           elseif string.sub(str, 1, 1) == "-" then
-            TimerNeg = true
-          if len == 4 then
-            Timer = 0000 -- len of 4 while negative will be less than 1 second, beyond the accuracy of the plugin
-          elseif len == 5 then
-            local firstTwo = string.sub(str, 2, 2)
-            Timer = firstTwo -- Output: "12"
-          elseif len == 6 then
-            local firstThree = string.sub(str, 2, 3)
-            Timer = firstThree -- Output: "123"
-          elseif len == 7 then
-            local firstFour = string.sub(str, 2, 4)
-            Timer = firstFour -- Output: "1234"
-          elseif len == 8 then
-            local firstFive = string.sub(str, 2, 5)
-            Timer = firstFive -- Output: "12345"
-          elseif len == 9 then
-            local firstSix = string.sub(str, 2, 6)
-            Timer = firstSix -- Output: "123456"
-          end
-         else
-        end
-        
-         
-        tonumber(Timer)
+           TimerNeg = true
+
+            if len == 4 then
+              Timer = 0000 -- len of 4 while negative will be less than 1 second, beyond the accuracy of the plugin
+            elseif len == 5 then
+              local firstTwo = string.sub(str, 2, 2)
+              Timer = firstTwo -- Output: "12"
+            elseif len == 6 then
+              local firstThree = string.sub(str, 2, 3)
+              Timer = firstThree -- Output: "123"
+            elseif len == 7 then
+              local firstFour = string.sub(str, 2, 4)
+              Timer = firstFour -- Output: "1234"
+            elseif len == 8 then
+              local firstFive = string.sub(str, 2, 5)
+              Timer = firstFive -- Output: "12345"
+            elseif len == 9 then
+              local firstSix = string.sub(str, 2, 6)
+              Timer = firstSix -- Output: "123456"
+          end     
+    tonumber(Timer)
         local seconds = Timer
         local hours = math.floor(seconds / 3600)
         local minutes = math.floor((seconds % 3600) / 60)
@@ -1128,87 +1137,79 @@ ws.Data = function ( ws, data) ---All of feedback
         local timerFormatted = string.format("%02d:%02d:%02d", hours, minutes, secondsRemaining)
         local timernegFormatted = string.format("-".."%02d:%02d:%02d", hours, minutes, secondsRemaining)
         if TimerNeg == true then
-          Controls.Neg_Time_Remaining.String = timernegFormatted
-          Controls.Time_Remaining.String = ""
-         elseif Timer then
-          Controls.Time_Remaining.String = timerFormatted
-          Controls.Neg_Time_Remaining.String = ""
-        end
-         -- Event Title
-        Title = responsetbl.payload.eventNow.title
-        if Title then
-          Controls.Event_Title.String = Title
-        end
-         -- Event Subtile
-        Sub = responsetbl.payload.eventNow.subtitle
-        if Sub then
-          Controls.Event_Subtitle.String = Sub
-        end
-         -- Current Presenter
-        Presenter = responsetbl.payload.eventNow.presenter
-        if Presenter then
-          Controls.Presenter.String = Presenter
-        end 
-         -- Event Notes
-        Note = responsetbl.payload.eventNow.note
-        if Note then  
-          Controls.Note.String = Note
-        end
-         -- Event Number. Feedback was starting at 0 even though Event ID in application was 1 so added 1 to each returned feedback
-        Index = responsetbl.payload.loaded.selectedEventIndex + 1
-          -- Index = responsetbl.payload.eventNow.cue
+            Controls.Neg_Time_Remaining.String = timernegFormatted
+            Controls.Time_Remaining.String = ""
+        elseif Timer then
+            Controls.Time_Remaining.String = timerFormatted
+            Controls.Neg_Time_Remaining.String = ""
+     end
+   end
+  end
+ end
+ function OntimeFB(data)
+  --print("ONTIME DATA", data)
+      -- Event Number. Feedback was starting at 0 even though Event ID in application was 1 so added 1 to each returned feedback
+      Index = responsetbl.payload.runtime.selectedEventIndex + 1
         if Playback == "roll" or Playback == "stop" then
           Controls.Event_Index.IsInvisible = true
         else
-          Controls.Event_Index.Value = Index
+        Controls.Event_Index.Value = Index
+        --print(Index)
         end
-        numEvents = responsetbl.payload.loaded.numEvents
+      numEvents = responsetbl.payload.runtime.numEvents
         if numEvents then
-          Controls.Event_Total.Value = numEvents
+        --print(numEvents)
+        Controls.Event_Total.Value = numEvents
         end
-         -- Next Event Tile
+       -- Event Title
+      Title = responsetbl.payload.eventNow.title
+        if Title then
+          Controls.Event_Title.String = Title
+        end
+      -- Event Notes
+      Note = responsetbl.payload.eventNow.note
+        if Note then  
+          Controls.Note.String = Note
+        end
+      -- Next Event Tile
         if Index ~= numEvents then
-         NextTitle = responsetbl.payload.eventNext.title
-         --end
-         if NextTitle then
-         Controls.Next_Event_Title.String = NextTitle
-         else
-         end
-         -- Next Event Subtitle
-         NextSub = responsetbl.payload.eventNext.subtitle
-         if NextSub then
-         Controls.Next_Event_Subtitle.String = NextSub
-         end
-         -- Next Presenter
-         NextPresenter = responsetbl.payload.eventNext.presenter
-         if NextPresenter then
-         Controls.Next_Presenter.String = NextPresenter
-         end 
-         -- Next Event Notes
-         NextNote = responsetbl.payload.eventNext.note
-         if NextNote then  
-         Controls.Next_Note.String = NextNote
-         end
+          NextTitle = responsetbl.payload.eventNext.title
+        end
+        if NextTitle then
+          Controls.Next_Event_Title.String = NextTitle
         else
         end
-       -- Is Ontime On Air
-        onAir = responsetbl.payload.onAir
+      -- Next Event Note
+      NextNote = responsetbl.payload.eventNext.note
+        if NextNote then  
+         Controls.Next_Note.String = NextNote
+        end
+      -- Next Event Tile
+        if Index ~= numEvents then
+          NextTitle = responsetbl.payload.eventNext.title
+        --end
+        if NextTitle then
+          Controls.Next_Event_Title.String = NextTitle
+        else
+        end
+      -- Is Ontime On Air
+      onAir = responsetbl.payload.onAir
         if onAir == true then  
           Controls.On_Air.Value = true
         else
-          Controls.On_Air.Value = false
+         Controls.On_Air.Value = false
         end 
-        -- is Ontime Timer Blinking
-        blinktime = responsetbl.payload.timerMessage.timerBlink
+      -- is Ontime Timer Blinking
+      blinktime = responsetbl.payload.message.timer.blink
         if blinktime == true then 
           Controls.Blink.Value = 1
-          startFlashTimer()
+        startFlashTimer()
         else
           Controls.Blink.Value = 0
-          stopFlashTimer()
+        stopFlashTimer()
         end 
-        -- is Ontime  Time Message Blank
-        blanktime = responsetbl.payload.timerMessage.timerBlackout
+      -- is Ontime Time Message Blacked out
+      blanktime = responsetbl.payload.message.timer.blackout
         if blanktime == true then  
           Controls.Blank.Value = true
           Controls.Time_Remaining.IsInvisible = true
@@ -1218,88 +1219,88 @@ ws.Data = function ( ws, data) ---All of feedback
           Controls.Time_Remaining.IsInvisible = false
           Controls.Neg_Time_Remaining.IsInvisible = false
         end
-        -- is Ontime Time Message visible
-        blanktime = responsetbl.payload.timerMessage.visible
+      -- is Ontime Time Message visible
+      blanktime = responsetbl.payload.message.timer.visible
         if blanktime == true then  
           Controls["T-MessageVis"].Value = true
-          Controls["Current T-Message"].IsInvisible = true
         else
           Controls["T-MessageVis"].Value = false
-          Controls["Current T-Message"].IsInvisible = false
         end
-        -- What is Ontime Current Time Message
-        timermes = responsetbl.payload.timerMessage.text
+      -- What is Ontime Current Time Message
+      timermes = responsetbl.payload.message.timer.text
         if timermes then  
           Controls["Current T-Message"].String = timermes
         end
-        -- What is Ontime Current Public Message
-        pubmes = responsetbl.payload.publicMessage.text
+      -- What is Ontime Current Public Message
+      pubmes = responsetbl.payload.message.external.text
         if pubmes then  
           Controls["Current P-Message"].String = pubmes
         end
-        -- is Ontime Public Message visible
-        blanktime = responsetbl.payload.publicMessage.visible
+      -- is Ontime Public Message visible
+      blanktime = responsetbl.payload.message.external.visible
         if blanktime == true then  
           Controls["P-MessageVis"].Value = true
-          Controls["Current P-Message"].IsInvisible = true
         else
           Controls["P-MessageVis"].Value = false
-          Controls["Current P-Message"].IsInvisible = false
         end
-      end
-  end
+    end
  end
-Controls.Play.EventHandler = function (Play)
+ function poll()
+  running = {
+   type = "poll",
+  }
+  -- Convert the Lua table to a JSON string
+  local poll = json.encode(running)
+  ws:Write(poll, false)
+ end
+ Controls.Play.EventHandler = function ()
      PLYMS = {
       type = "start",
-      payload = {}
     }
     -- Convert the Lua table to a JSON string
     local play_command = json.encode(PLYMS)
     ws:Write(play_command, false)
     print("sending", play_command)
  end
-Controls.Pause.EventHandler = function (Pause)
+ Controls.Pause.EventHandler = function ()
     Pausems= {
         type = "pause",
-        payload = {}
       }
       -- Convert the Lua table to a JSON string
       local pause_command = json.encode(Pausems)
       ws:Write(pause_command, false)
       print("sending", pause_command)
-   end
-Controls.Next.EventHandler = function (Next)
+ end
+ Controls.Next.EventHandler = function ()
     nextms= {
-        type = "next",
-        payload = {}
+      type = "load",
+      payload = "next"
       }
       -- Convert the Lua table to a JSON string
       local next_command = json.encode(nextms)
       ws:Write(next_command, false)
       print("sending", next_command)
-   end
-Controls.Previous.EventHandler = function (Previous)
+ end
+ Controls.Previous.EventHandler = function ()
     Prems= {
-        type = "previous",
-        payload = {}
+        type = "load",
+        payload = "previous"
       }
       -- Convert the Lua table to a JSON string
       local pre_command = json.encode(Prems)
       ws:Write(pre_command, false)
       print("sending", pre_command)
-   end
-Controls.Restart.EventHandler = function (Restart)
+ end
+ Controls.Restart.EventHandler = function ()
     Restartms= {
         type = "reload",
-        payload = {}
       }
       -- Convert the Lua table to a JSON string
       local restart_command = json.encode(Restartms)
       ws:Write(restart_command, false)
       print("sending", restart_command)
-   end
-Controls["Set_OnAir"].EventHandler = function ()
+ end
+ Controls["Set_OnAir"].EventHandler = function ()
     if Controls["Set_OnAir"].Boolean
     then
     OnAirms= {
@@ -1316,38 +1317,40 @@ Controls["Set_OnAir"].EventHandler = function ()
     local OnAir_command = json.encode(OnAirms)
     ws:Write(OnAir_command, false)
     print("sending", OnAir_command)
-  end
-Controls["Plus 1"].EventHandler = function ()
+ end
+ Controls["Plus 1"].EventHandler = function ()
     A1MS = {
      type = "addtime",
-     payload = 60
+     payload = {
+      add = 60
+     }
    }
    -- Convert the Lua table to a JSON string
    local plus1_command = json.encode(A1MS)
    ws:Write(plus1_command, false)
    print("sending", plus1_command)
  end
-Controls["Minus 1"].EventHandler = function ()
-  M1MS = {
-   type = "addtime",
-   payload = -60
- }
- -- Convert the Lua table to a JSON string
- local minus1_command = json.encode(M1MS)
- ws:Write(minus1_command, false)
- print("sending", minus1_command)
+ Controls["Minus 1"].EventHandler = function ()
+   M1MS = {
+    type = "addtime",
+    payload = -60
+   }
+   -- Convert the Lua table to a JSON string
+  local minus1_command = json.encode(M1MS)
+  ws:Write(minus1_command, false)
+  print("sending", minus1_command)
  end
-Controls["Plus 5"].EventHandler = function ()
+ Controls["Plus 5"].EventHandler = function ()
   A5MS = {
    type = "addtime",
    payload = 300
- }
- -- Convert the Lua table to a JSON string
- local plus5_command = json.encode(A5MS)
- ws:Write(plus5_command, false)
- print("sending", plus5_command)
+  }
+  -- Convert the Lua table to a JSON string
+  local plus5_command = json.encode(A5MS)
+  ws:Write(plus5_command, false)
+  print("sending", plus5_command)
  end
-Controls["Minus 5"].EventHandler = function ()
+ Controls["Minus 5"].EventHandler = function ()
  M5MS = {
   type = "addtime",
   payload = -300
@@ -1357,8 +1360,8 @@ Controls["Minus 5"].EventHandler = function ()
  ws:Write(minus5_command, false)
  print("sending", minus5_command)
  end
----vvvvvvvFlashing Blink Logic :|
-function flashButton()
+ ---vvvvvvvFlashing Blink Logic :|
+ function flashButton()
   Controls.BlinkBlink.Value = (Controls.BlinkBlink.Value == 1) and 0 or 1
   -- Update the visual appearance of the flashing button based on its value
   -- You may need to replace the line above with the appropriate code for your UI library
@@ -1372,11 +1375,11 @@ function flashButton()
       Controls.Time_Remaining.IsDisabled  = false -- Reset the visibility when flashing stops
   end
  end
-function startFlashTimer()
+ function startFlashTimer()
   -- Start the timer for flashing
   delay:Start(.6)
  end
-function stopFlashTimer()
+ function stopFlashTimer()
   -- Stop the flashing timer
   delay:Stop()
   Controls.BlinkBlink.Value = 0 -- Reset the visibility when flashing stops
@@ -1386,8 +1389,7 @@ function stopFlashTimer()
   -- Update the visual appearance of the flashing button to its initial state
   -- You may need to replace the line above with the appropriate code for your UI library
  end
-
-function Blink()
+ function Blink()
   local BCMD
 
   if Controls.Blink.Value == 1 then
@@ -1414,20 +1416,28 @@ function Blink()
   ws:Write(blink_command, false)
   print("sending", blink_command)
  end
----^^^^^^Flashing Blink Logic :|
-Controls["T-MessageVis"].EventHandler = function (PresTextVis)
+ ---^^^^^^Flashing Blink Logic :|
+ Controls["T-MessageVis"].EventHandler = function ()
     if Controls["T-MessageVis"].Boolean
     then
       TVCMD= {
-      type = "set-timer-message-visible",
-      payload = true
-    }
+        type = "message",
+        payload = {
+        timer = {
+        visible = true
+          }
+        }
+      }
     Controls["Current T-Message"].IsInvisible = true
     else
       TVCMD= {
-      type = "set-timer-message-visible",
-      payload = false
-    }
+        type = "message",
+        payload = {
+        timer = {
+        visible = false
+          }
+        }
+      }
     Controls["Current T-Message"].IsInvisible = false
     end
     -- Convert the Lua table to a JSON string
@@ -1435,19 +1445,27 @@ Controls["T-MessageVis"].EventHandler = function (PresTextVis)
     ws:Write(textvis_command, false)
     print("sending", textvis_command)
   end
-Controls["P-MessageVis"].EventHandler = function (PubTextVis)
+ Controls["P-MessageVis"].EventHandler = function (PubTextVis)
     if Controls["P-MessageVis"].Boolean
     then 
       pubTVCMD= {
-      type = "set-public-message-visible",
-      payload = true
-    }
+        type = "message",
+        payload = {
+        external = {
+        visible = true
+          }
+        }
+      }
     Controls["Current P-Message"].IsInvisible = true
     else
       pubTVCMD= {
-      type = "set-public-message-visible",
-      payload = false
-    }
+        type = "message",
+        payload = {
+        external = {
+        visible = false
+          }
+        }
+      }
     Controls["Current P-Message"].IsInvisible = false
     end
     -- Convert the Lua table to a JSON string
@@ -1455,26 +1473,34 @@ Controls["P-MessageVis"].EventHandler = function (PubTextVis)
     ws:Write(pubtextvis_command, false)
     print("sending", pubtextvis_command)
   end   
-Controls["Send TimerMessage"].EventHandler = function (PresMess) --ws
+ Controls["Send TimerMessage"].EventHandler = function (PresMess)
     local PresText = Controls["TimerMessage"].String
     local text = {
-      type = "set-timer-message-text",
-      payload = PresText  -- Replace with the actual string you want to send
+      type = "message",
+      payload = {
+      timer = {
+      text = PresText
+     }
     }
+  }
     local json_message = json.encode(text)
     print("sending", json_message)
     ws:Write(json_message, false) 
   end
-Controls["Send PublicMessage"].EventHandler = function (PubMess) --ws
+ Controls["Send PublicMessage"].EventHandler = function ()
     local pubText = Controls["PublicMessage"].String
     local text = {
-      type = "set-public-message-text",
-      payload = pubText}
+      type = "message",
+      payload = {
+      external = {
+      text = pubText}
+    }
+  }
     local json_message = json.encode(text)
         print("sending", json_message)
         ws:Write(json_message, false)
   end
-Controls.Blank.EventHandler = function (BlackOut)
+ Controls.Blank.EventHandler = function (BlackOut)
     if Controls.Blank.Boolean
     then
     BOCMD = {
@@ -1496,24 +1522,12 @@ Controls.Blank.EventHandler = function (BlackOut)
     print("sending", black_command)
  end 
 
-Controls.Blink.EventHandler = Blink
-delay.EventHandler = flashButton
+ Controls.Blink.EventHandler = Blink
+ delay.EventHandler = flashButton
+ polltimer.EventHandler = poll
 
+ --Run At Start
 
---Run At Start
+ Connect()
 
-Connect()
-
- end
-
---[[        if Index == 0 then
-            print("No Event Selected")
-            GoTo1 = {
-              type = "gotocue",
-              payload = 1
-            }
-            -- Convert the Lua table to a JSON string
-            local goto1_command = json.encode(GoTo1)
-            ws:Write(goto1_command, false)
-            print("loading event 1")
-            end]]
+end
