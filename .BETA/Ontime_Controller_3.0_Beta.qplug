@@ -209,18 +209,6 @@ PluginInfo = {
       UserPin = false
     })
     table.insert(ctrls, {
-      Name = "Event_Subtitle",
-      ControlType = "Text",
-      Count = 1,
-      UserPin = false
-    })
-    table.insert(ctrls, {
-      Name = "Presenter",
-      ControlType = "Text",
-      Count = 1,
-      UserPin = false
-    })
-    table.insert(ctrls, {
       Name = "Note",
       ControlType = "Text",
       Count = 1,
@@ -228,18 +216,6 @@ PluginInfo = {
     })
     table.insert(ctrls, {
       Name = "Next_Event_Title",
-      ControlType = "Text",
-      Count = 1,
-      UserPin = false
-    })
-    table.insert(ctrls, {
-      Name = "Next_Event_Subtitle",
-      ControlType = "Text",
-      Count = 1,
-      UserPin = false
-    })
-    table.insert(ctrls, {
-      Name = "Next_Presenter",
       ControlType = "Text",
       Count = 1,
       UserPin = false
@@ -614,25 +590,6 @@ PluginInfo = {
         FontSize = 13,
         HTextAlign = "Left"
         }
-      layout["On_Air"] = {
-        Style="LED",
-        Color={10,67,185},
-        OffColor={64,64,64},
-        StrokeWidth = 0,
-        UnlinkOffColor=true,
-        Position={120,70},
-        Size={20,20},
-        CornerRadius= 8
-        }
-      layout["Set_OnAir"] = {
-        PrettyName="On Air",
-        Style="button",
-        Color={0,0,0,0},
-        Position={120,70},
-        Size={20,20},
-        ZOrder = 200,
-        CornerRadius = 8
-        }
     elseif CurrentPage == "Event" then
       table.insert(graphics,{ --Current Event background
             Type = "GroupBox",
@@ -701,61 +658,25 @@ PluginInfo = {
             FontSize = 10,
             IsReadOnly = true,
             Position = {170,89},
-            Size = {165,25},
+            Size = {185,25},
             }
         table.insert(graphics,{
             Type = "Text",
-            Text = "Event Subtitle",
+            Text = "Event Notes",
             Position = {168,110},
             Size = {120,30},
             FontSize = 14,
             Color = {220,220,220},
             HTextAlign = "Left"
           })          
-          layout["Event_Subtitle"] = {
-            PrettyName = "Event Subtitle",
-            CornerRadius = 6,
-            Style = "Text",
-            FontSize = 10,
-            IsReadOnly = true,
-            Position = {170,136},
-            Size = {165,25},
-            }
-        table.insert(graphics,{
-            Type = "Text",
-            Text = "Presenter",
-            Position = {349,64},
-            Size = {120,30},
-            FontSize = 14,
-            Color = {220,220,220},
-            HTextAlign = "Left"
-          })
-          layout["Presenter"] = {
-            PrettyName = "Presenter",
-            CornerRadius = 6,
-            Style = "Text",
-            FontSize = 10,
-            IsReadOnly = true,
-            Position = {349,89},
-            Size = {165,25},
-            }
-        table.insert(graphics,{
-            Type = "Text",
-            Text = "Event Notes",
-            Position = {349,110},
-            Size = {120,30},
-            FontSize = 14,
-            Color = {220,220,220},
-            HTextAlign = "Left"
-          })
           layout["Note"] = {
             PrettyName = "Event Notes",
             CornerRadius = 6,
             Style = "Text",
             FontSize = 10,
             IsReadOnly = true,
-            Position = {349,136},
-            Size = {165,25},
+            Position = {170,136},
+            Size = {185,25},
             }
       ----Next Event Stuff----
       
@@ -770,27 +691,9 @@ PluginInfo = {
           })
         table.insert(graphics,{
             Type = "Text",
-            Text = "Next Event Subtitle",
+            Text = "Next Event Notes",
             Position = {168,222},
             Size = {125,30},
-            FontSize = 14,
-            Color = {220,220,220},
-            HTextAlign = "Left"
-          })
-        table.insert(graphics,{
-            Type = "Text",
-            Text = "Next Presenter",
-            Position = {349,172},
-            Size = {120,30},
-            FontSize = 14,
-            Color = {220,220,220},
-            HTextAlign = "Left"
-          })
-        table.insert(graphics,{
-            Type = "Text",
-            Text = "Next Event Notes",
-            Position = {349,222},
-            Size = {120,30},
             FontSize = 14,
             Color = {220,220,220},
             HTextAlign = "Left"
@@ -802,25 +705,7 @@ PluginInfo = {
           FontSize = 10,
           IsReadOnly = true,
           Position = {170,198},
-          Size = {165,25},
-          }
-        layout["Next_Event_Subtitle"] = {
-          PrettyName = "Next Event Subtitle",
-          CornerRadius = 6,
-          Style = "Text",
-          FontSize = 10,
-          IsReadOnly = true,
-          Position = {170,247},
-          Size = {165,25},
-          }
-        layout["Next_Presenter"] = {
-          PrettyName = "Next Presenter",
-          CornerRadius = 6,
-          Style = "Text",
-          FontSize = 10,
-          IsReadOnly = true,
-          Position = {349,198},
-          Size = {165,25},
+          Size = {185,25},
           }
         layout["Next_Note"] = {
           PrettyName = "Next Event Notes",
@@ -828,9 +713,9 @@ PluginInfo = {
           Style = "Text",
           FontSize = 10,
           IsReadOnly = true,
-          Position = {349,247},
-          Size = {165,25},
-          }        
+          Position = {170,247},
+          Size = {185,25},
+          }     
     elseif CurrentPage == "Messaging" then  
       table.insert(graphics,{ --Timer Messaging background
         Type = "GroupBox",
@@ -1054,197 +939,109 @@ if Controls then
 
     if responsetbl.type == "ontime-log" then
             LogFB(data)
-    elseif responsetbl.type == "ontime-timer" then
-            TimerFB(data)
     elseif responsetbl.type == "poll" then
-            OntimeFB(data)
-    end
+            TimerFB(data)
+
+  end
  end
+
+ local function setControlString(control, value)
+  if value then
+    Controls[control].String = value
+  end
+end
+
+local function setControlValue(control, value)
+  Controls[control].Value = value
+end
+
+local function setControlVisibility(control, isVisible)
+  Controls[control].IsInvisible = not isVisible
+end
+
+function TimerFB(data)
+ -- print("TIMER DATA", data)
+  
+  local payload = responsetbl.payload
+  local playback = payload.timer.playback
+  print(playback)
+
+  -- Handle timer display
+  if playback == "roll" then
+    setControlString("Neg_Time_Remaining", "ROLL")
+    setControlString("Time_Remaining", "")
+  elseif playback == "stop" then
+    setControlString("Neg_Time_Remaining", "")
+    setControlString("Time_Remaining", "-- : -- : --")
+  else 
+    local timerCurrent = payload.timer.current
+    local isNegative = false
+    local timerValue = 0
+
+    if type(timerCurrent) == "number" then
+      isNegative = timerCurrent < 0
+      timerValue = math.abs(timerCurrent)
+    elseif type(timerCurrent) == "string" then
+      isNegative = timerCurrent:sub(1, 1) == "-"
+      timerValue = tonumber(timerCurrent:sub(isNegative and 2 or 1)) or 0
+    end
+
+    -- Convert milliseconds to seconds
+    local totalSeconds = math.floor(timerValue / 1000)
+    local hours = math.floor(totalSeconds / 3600)
+    local minutes = math.floor((totalSeconds % 3600) / 60)
+    local seconds = totalSeconds % 60
+
+    local timerFormatted = string.format("%02d:%02d:%02d", hours, minutes, seconds)
+    if isNegative then timerFormatted = "-" .. timerFormatted end
+
+    setControlString("Neg_Time_Remaining", isNegative and timerFormatted or "")
+    setControlString("Time_Remaining", isNegative and "" or timerFormatted)
+  end
+
+  -- Event handling
+  local index = payload.runtime.selectedEventIndex + 1
+  setControlVisibility("Event_Index", playback ~= "roll" and playback ~= "stop")
+  setControlValue("Event_Index", index)
+
+  local numEvents = payload.runtime.numEvents
+  setControlValue("Event_Total", numEvents)
+
+  -- Current event details
+  setControlString("Event_Title", payload.eventNow.title)
+  setControlString("Note", payload.eventNow.note)
+
+  -- Next event details
+  if index ~= numEvents then
+    setControlString("Next_Event_Title", payload.eventNext.title)
+    setControlString("Next_Note", payload.eventNext.note)
+  else
+    setControlString("Next_Event_Title", "End of Event List")
+    setControlString("Next_Note", "End of Event List")
+  end
+
+  -- Timer blinking
+  local isBlinking = payload.message.timer.blink
+  setControlValue("Blink", isBlinking and 1 or 0)
+  if isBlinking then startFlashTimer() else stopFlashTimer() end
+
+  -- Timer visibility
+  local isTimerBlackedOut = payload.message.timer.blackout
+  setControlValue("Blank", isTimerBlackedOut)
+  setControlVisibility("Time_Remaining", not isTimerBlackedOut)
+  setControlVisibility("Neg_Time_Remaining", not isTimerBlackedOut)
+
+  -- Message visibility and content
+  setControlValue("T-MessageVis", payload.message.timer.visible)
+  setControlString("Current T-Message", payload.message.timer.text)
+  setControlString("Current P-Message", payload.message.external.text)
+  setControlValue("P-MessageVis", payload.message.external.visible)
+end
  function LogFB(data)
     print("LOG DATA", data)
     --Error checking/successful command stuff goes here
     --print ("Command Issued")
- end
- function TimerFB(data)
-    --print("TIMER DATA", data)
-    --- Playback Modes
-    Playback = responsetbl.payload.playback
-    if Playback == "roll" then
-        Controls.Neg_Time_Remaining.String = "ROLL"
-        Controls.Time_Remaining.String = ""
-    elseif
-      Playback == "stop" then
-        Controls.Neg_Time_Remaining.String = ""
-        Controls.Time_Remaining.String = "-- : -- : --"
-    else
-        Timer = responsetbl.payload.current
-        local str = Timer
-        local len = string.len(str)
-        print("Timer="..Timer)
-        print("String Length="..len)
-          if string.sub(str, 1, 1) ~= "-" then
-           TimerNeg = false
-
-            if len == 3 then
-              Timer = 0000
-            elseif len == 4 then
-              local firstOne = string.sub(str, 1, 1)
-              Timer = firstOne -- Output: "1"
-            elseif len == 5 then
-              local firstTwo = string.sub(str, 1, 2)
-              Timer = firstTwo -- Output: "12"
-            elseif len == 6 then
-              local firstThree = string.sub(str, 1, 3)
-              Timer = firstThree -- Output: "123"
-            elseif len == 7 then
-              local firstFour = string.sub(str, 1, 4)
-              Timer = firstFour -- Output: "1234"
-            elseif len == 8 then
-              local firstFive = string.sub(str, 1, 5)
-              Timer = firstFive -- Output: "12345"
-            elseif len == 9 then
-              local firstSix = string.sub(str, 1, 6)
-              Timer = firstSix -- Output: "123456"
-            end
-            
-          elseif string.sub(str, 1, 1) == "-" then
-           TimerNeg = true
-
-            if len == 4 then
-              Timer = 0000 -- len of 4 while negative will be less than 1 second, beyond the accuracy of the plugin
-            elseif len == 5 then
-              local firstTwo = string.sub(str, 2, 2)
-              Timer = firstTwo -- Output: "12"
-            elseif len == 6 then
-              local firstThree = string.sub(str, 2, 3)
-              Timer = firstThree -- Output: "123"
-            elseif len == 7 then
-              local firstFour = string.sub(str, 2, 4)
-              Timer = firstFour -- Output: "1234"
-            elseif len == 8 then
-              local firstFive = string.sub(str, 2, 5)
-              Timer = firstFive -- Output: "12345"
-            elseif len == 9 then
-              local firstSix = string.sub(str, 2, 6)
-              Timer = firstSix -- Output: "123456"
-          end     
-    tonumber(Timer)
-        local seconds = Timer
-        local hours = math.floor(seconds / 3600)
-        local minutes = math.floor((seconds % 3600) / 60)
-        local secondsRemaining = seconds % 60
-        -- Format the time as HH:MM:SS
-        local timerFormatted = string.format("%02d:%02d:%02d", hours, minutes, secondsRemaining)
-        local timernegFormatted = string.format("-".."%02d:%02d:%02d", hours, minutes, secondsRemaining)
-        if TimerNeg == true then
-            Controls.Neg_Time_Remaining.String = timernegFormatted
-            Controls.Time_Remaining.String = ""
-        elseif Timer then
-            Controls.Time_Remaining.String = timerFormatted
-            Controls.Neg_Time_Remaining.String = ""
-     end
-   end
   end
- end
- function OntimeFB(data)
-  --print("ONTIME DATA", data)
-      -- Event Number. Feedback was starting at 0 even though Event ID in application was 1 so added 1 to each returned feedback
-      Index = responsetbl.payload.runtime.selectedEventIndex + 1
-        if Playback == "roll" or Playback == "stop" then
-          Controls.Event_Index.IsInvisible = true
-        else
-        Controls.Event_Index.Value = Index
-        --print(Index)
-        end
-      numEvents = responsetbl.payload.runtime.numEvents
-        if numEvents then
-        --print(numEvents)
-        Controls.Event_Total.Value = numEvents
-        end
-       -- Event Title
-      Title = responsetbl.payload.eventNow.title
-        if Title then
-          Controls.Event_Title.String = Title
-        end
-      -- Event Notes
-      Note = responsetbl.payload.eventNow.note
-        if Note then  
-          Controls.Note.String = Note
-        end
-      -- Next Event Tile
-        if Index ~= numEvents then
-          NextTitle = responsetbl.payload.eventNext.title
-        end
-        if NextTitle then
-          Controls.Next_Event_Title.String = NextTitle
-        else
-        end
-      -- Next Event Note
-      NextNote = responsetbl.payload.eventNext.note
-        if NextNote then  
-         Controls.Next_Note.String = NextNote
-        end
-      -- Next Event Tile
-        if Index ~= numEvents then
-          NextTitle = responsetbl.payload.eventNext.title
-        --end
-        if NextTitle then
-          Controls.Next_Event_Title.String = NextTitle
-        else
-        end
-      -- Is Ontime On Air
-      onAir = responsetbl.payload.onAir
-        if onAir == true then  
-          Controls.On_Air.Value = true
-        else
-         Controls.On_Air.Value = false
-        end 
-      -- is Ontime Timer Blinking
-      blinktime = responsetbl.payload.message.timer.blink
-        if blinktime == true then 
-          Controls.Blink.Value = 1
-        startFlashTimer()
-        else
-          Controls.Blink.Value = 0
-        stopFlashTimer()
-        end 
-      -- is Ontime Time Message Blacked out
-      blanktime = responsetbl.payload.message.timer.blackout
-        if blanktime == true then  
-          Controls.Blank.Value = true
-          Controls.Time_Remaining.IsInvisible = true
-          Controls.Neg_Time_Remaining.IsInvisible = true
-        else
-          Controls.Blank.Value = false
-          Controls.Time_Remaining.IsInvisible = false
-          Controls.Neg_Time_Remaining.IsInvisible = false
-        end
-      -- is Ontime Time Message visible
-      blanktime = responsetbl.payload.message.timer.visible
-        if blanktime == true then  
-          Controls["T-MessageVis"].Value = true
-        else
-          Controls["T-MessageVis"].Value = false
-        end
-      -- What is Ontime Current Time Message
-      timermes = responsetbl.payload.message.timer.text
-        if timermes then  
-          Controls["Current T-Message"].String = timermes
-        end
-      -- What is Ontime Current Public Message
-      pubmes = responsetbl.payload.message.external.text
-        if pubmes then  
-          Controls["Current P-Message"].String = pubmes
-        end
-      -- is Ontime Public Message visible
-      blanktime = responsetbl.payload.message.external.visible
-        if blanktime == true then  
-          Controls["P-MessageVis"].Value = true
-        else
-          Controls["P-MessageVis"].Value = false
-        end
-    end
- end
  function poll()
   running = {
    type = "poll",
@@ -1300,36 +1097,6 @@ if Controls then
       ws:Write(restart_command, false)
       print("sending", restart_command)
  end
- Controls["Set_OnAir"].EventHandler = function ()
-    if Controls["Set_OnAir"].Boolean
-    then
-    OnAirms= {
-       type = "set-onair",
-       payload = true
-    }
-    else
-    OnAirms = {
-      type = "set-onair",
-      payload = false
-    }
-   end
-    -- Convert the Lua table to a JSON string
-    local OnAir_command = json.encode(OnAirms)
-    ws:Write(OnAir_command, false)
-    print("sending", OnAir_command)
- end
- Controls["Plus 1"].EventHandler = function ()
-    A1MS = {
-     type = "addtime",
-     payload = {
-      add = 60
-     }
-   }
-   -- Convert the Lua table to a JSON string
-   local plus1_command = json.encode(A1MS)
-   ws:Write(plus1_command, false)
-   print("sending", plus1_command)
- end
  Controls["Minus 1"].EventHandler = function ()
    M1MS = {
     type = "addtime",
@@ -1351,14 +1118,14 @@ if Controls then
   print("sending", plus5_command)
  end
  Controls["Minus 5"].EventHandler = function ()
- M5MS = {
+  M5MS = {
   type = "addtime",
   payload = -300
- }
- -- Convert the Lua table to a JSON string
- local minus5_command = json.encode(M5MS)
- ws:Write(minus5_command, false)
- print("sending", minus5_command)
+  }
+  -- Convert the Lua table to a JSON string
+  local minus5_command = json.encode(M5MS)
+  ws:Write(minus5_command, false)
+  print("sending", minus5_command)
  end
  ---vvvvvvvFlashing Blink Logic :|
  function flashButton()
@@ -1390,7 +1157,6 @@ if Controls then
   -- You may need to replace the line above with the appropriate code for your UI library
  end
  function Blink()
-  local BCMD
 
   if Controls.Blink.Value == 1 then
       -- Start the flashing timer
@@ -1398,17 +1164,23 @@ if Controls then
       Controls.Neg_Time_Remaining.IsDisabled = true
       Controls.Time_Remaining.IsDisabled  = true
       startFlashTimer()
-      BCMD = {
-          type = "set-timer-blink",
-          payload = true
-      }
-  else
+       BCMD = {
+        type = "message",
+        payload = {
+          timer ={
+              blink = true}
+        }
+        }
+    else
       -- Stop the flashing timer
       stopFlashTimer()
-      BCMD = {
-          type = "set-timer-blink",
-          payload = false
-      }
+     BCMD = {
+        type = "message",
+        payload ={
+          timer ={
+              blink = false}
+        }
+        }
   end
 
   -- Convert the Lua table to a JSON string
@@ -1503,16 +1275,23 @@ if Controls then
  Controls.Blank.EventHandler = function (BlackOut)
     if Controls.Blank.Boolean
     then
-    BOCMD = {
-      type = "set-timer-blackout",
-      payload = true
-    }
+     BOCMD = {
+      type = "message",
+      payload = {
+        timer ={
+            blackout = true
+        }
+        }
+        }
     Controls.Time_Remaining.IsInvisible = true
     Controls.Neg_Time_Remaining.IsInvisible = true
     else
-     BOCMD = { 
-      type = "set-timer-blackout",
-      payload = false}
+     BOCMD = {
+        type = "message",
+            payload ={ 
+              timer ={
+                  blackout = false
+            }}}
      Controls.Time_Remaining.IsInvisible = false
      Controls.Neg_Time_Remaining.IsInvisible = false
     end
