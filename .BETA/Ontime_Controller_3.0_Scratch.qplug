@@ -944,18 +944,21 @@ if Controls then
   end
  end
 
- function setControlString(control, value)
-  if value then
+function setControlString(control, value)
+  if value ~= nil and value ~= "null" and type(value) == "string" then
     Controls[control].String = value
+  else
+    Controls[control].String = ""  -- fallback to empty string if needed
   end
 end
 
 function setControlValue(control, value)
-    if value then
-  Controls[control].Value = value
-    end
+  if value ~= nil and value ~= "null" and type(value) == "number" then
+    Controls[control].Value = value
+  else
+    Controls[control].Value = 0  -- fallback to 0 
+  end
 end
-
 
 function setControlVisibility(control, isVisible)
   Controls[control].IsInvisible = not isVisible
@@ -1002,23 +1005,35 @@ function TimerFB(data)
   end
 
   local index = 0
+  local selected = payload.runtime.selectedEventIndex
 
-  if payload.runtime.selectedEventIndex == nil then
-      setControlValue("Event_Index", "-")
+  if selected == nil or selected == "null" or type(selected) ~= "number" then
+    setControlValue("Event_Index", nil)
   else
-      index = payload.runtime.selectedEventIndex + 1
-      setControlVisibility("Event_Index", playback ~= "roll" and playback ~= "stop")
-      setControlValue("Event_Index", index)
+    index = selected + 1
+    setControlVisibility("Event_Index", playback ~= "roll" and playback ~= "stop")
+    setControlValue("Event_Index", index)
   end
 
   local numEvents = payload.runtime.numEvents
   setControlValue("Event_Total", numEvents)
 
+  print("eventNow type:", type(payload.eventNow))
+
+-- Optional: if it's a function, dump debug info
+if type(payload.eventNow) == "function" then
+  print("eventNow is a function, maybe redefined somewhere?")
+end
   -- Current event details
+if type(payload.eventNow) == "table" then
   setControlString("Event_Title", payload.eventNow.title)
   setControlString("Note", payload.eventNow.note)
-
+else
+  setControlString("Event_Title", "No Event Selected")
+  setControlString("Note", "No Event Selected")
+end
   -- Next event details
+if type(payload.eventNext) == "table" then
   if index ~= numEvents then
     setControlString("Next_Event_Title", payload.eventNext.title)
     setControlString("Next_Note", payload.eventNext.note)
@@ -1026,7 +1041,11 @@ function TimerFB(data)
     setControlString("Next_Event_Title", "End of Event List")
     setControlString("Next_Note", "End of Event List")
   end
-
+else
+  -- payload.eventNext is nil or not a table (likely JSON null)
+  setControlString("Next_Event_Title", "No Event Selected")
+  setControlString("Next_Note", "No Event Selected")
+end
   -- Timer blinking
   local isBlinking = payload.message.timer.blink
   setControlValue("Blink", isBlinking and 1 or 0)
