@@ -911,7 +911,7 @@ if Controls then
 
 
  IP.EventHandler = function()
-    if IP.String == "" then  -- If the user enters blank IP stop communication
+    if IP.String == "" then  -- If IP blank stops communication
       Disconnect()
     else
       Connect()  -- Otherwise Call Connect when the IPAddress EventHandler is called
@@ -936,7 +936,6 @@ if Controls then
  ws.Data = function(ws, data) ---All of feedback
     response = data
     responsetbl = json.decode(response)
-
     if responsetbl.type == "ontime-log" then
             LogFB(data)
     elseif responsetbl.type == "poll" then
@@ -945,26 +944,32 @@ if Controls then
   end
  end
 
- local function setControlString(control, value)
-  if value then
+function setControlString(control, value)
+  if value ~= nil and value ~= "null" and type(value) == "string" then
     Controls[control].String = value
+  else
+    Controls[control].String = ""  -- fallback to empty string if needed
   end
 end
 
-local function setControlValue(control, value)
-  Controls[control].Value = value
+function setControlValue(control, value)
+  if value ~= nil and value ~= "null" and type(value) == "number" then
+    Controls[control].Value = value
+  else
+    Controls[control].Value = 0  -- fallback to 0 
+  end
 end
 
-local function setControlVisibility(control, isVisible)
+function setControlVisibility(control, isVisible)
   Controls[control].IsInvisible = not isVisible
 end
 
 function TimerFB(data)
- -- print("TIMER DATA", data)
+  print("TIMER DATA", data)
   
   local payload = responsetbl.payload
   local playback = payload.timer.playback
-  print(playback)
+  --print(playback)
 
   -- Handle timer display
   if playback == "roll" then
@@ -999,19 +1004,36 @@ function TimerFB(data)
     setControlString("Time_Remaining", isNegative and "" or timerFormatted)
   end
 
-  -- Event handling
-  local index = payload.runtime.selectedEventIndex + 1
-  setControlVisibility("Event_Index", playback ~= "roll" and playback ~= "stop")
-  setControlValue("Event_Index", index)
+  local index = 0
+  local selected = payload.runtime.selectedEventIndex
+
+  if selected == nil or selected == "null" or type(selected) ~= "number" then
+    setControlValue("Event_Index", nil)
+  else
+    index = selected + 1
+    setControlVisibility("Event_Index", playback ~= "roll" and playback ~= "stop")
+    setControlValue("Event_Index", index)
+  end
 
   local numEvents = payload.runtime.numEvents
   setControlValue("Event_Total", numEvents)
 
+  print("eventNow type:", type(payload.eventNow))
+
+-- Optional: if it's a function, dump debug info
+if type(payload.eventNow) == "function" then
+  print("eventNow is a function, maybe redefined somewhere?")
+end
   -- Current event details
+if type(payload.eventNow) == "table" then
   setControlString("Event_Title", payload.eventNow.title)
   setControlString("Note", payload.eventNow.note)
-
+else
+  setControlString("Event_Title", "No Event Selected")
+  setControlString("Note", "No Event Selected")
+end
   -- Next event details
+if type(payload.eventNext) == "table" then
   if index ~= numEvents then
     setControlString("Next_Event_Title", payload.eventNext.title)
     setControlString("Next_Note", payload.eventNext.note)
@@ -1019,7 +1041,11 @@ function TimerFB(data)
     setControlString("Next_Event_Title", "End of Event List")
     setControlString("Next_Note", "End of Event List")
   end
-
+else
+  -- payload.eventNext is nil or not a table (likely JSON null)
+  setControlString("Next_Event_Title", "No Event Selected")
+  setControlString("Next_Note", "No Event Selected")
+end
   -- Timer blinking
   local isBlinking = payload.message.timer.blink
   setControlValue("Blink", isBlinking and 1 or 0)
@@ -1034,7 +1060,7 @@ function TimerFB(data)
   -- Message visibility and content
   setControlValue("T-MessageVis", payload.message.timer.visible)
   setControlString("Current T-Message", payload.message.timer.text)
-  setControlString("Current P-Message", payload.message.external.text)
+  setControlString("Current P-Message", payload.message.external)
   setControlValue("P-MessageVis", payload.message.external.visible)
 end
  function LogFB(data)
@@ -1279,7 +1305,7 @@ end
       type = "message",
       payload = {
         timer ={
-            blackout = true
+            blackout = false
         }
         }
         }
