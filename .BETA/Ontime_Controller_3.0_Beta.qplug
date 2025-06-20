@@ -965,7 +965,7 @@ function setControlVisibility(control, isVisible)
 end
 
 function TimerFB(data)
-  print("TIMER DATA", data)
+  --print("TIMER DATA", data)
   
   local payload = responsetbl.payload
   local playback = payload.timer.playback
@@ -1016,40 +1016,48 @@ function TimerFB(data)
   end
 
   local numEvents = payload.runtime.numEvents
-  setControlValue("Event_Total", numEvents)
-
-  print("eventNow type:", type(payload.eventNow))
-
--- Optional: if it's a function, dump debug info
-if type(payload.eventNow) == "function" then
-  print("eventNow is a function, maybe redefined somewhere?")
-end
+   setControlValue("Event_Total", numEvents)
+  
   -- Current event details
-if type(payload.eventNow) == "table" then
-  setControlString("Event_Title", payload.eventNow.title)
-  setControlString("Note", payload.eventNow.note)
-else
-  setControlString("Event_Title", "No Event Selected")
-  setControlString("Note", "No Event Selected")
-end
-  -- Next event details
-if type(payload.eventNext) == "table" then
-  if index ~= numEvents then
-    setControlString("Next_Event_Title", payload.eventNext.title)
-    setControlString("Next_Note", payload.eventNext.note)
+  if type(payload.eventNow) == "table" then
+   setControlString("Event_Title", payload.eventNow.title)
+   setControlString("Note", payload.eventNow.note)
   else
-    setControlString("Next_Event_Title", "End of Event List")
-    setControlString("Next_Note", "End of Event List")
+   setControlString("Event_Title", "No Event Selected")
+   setControlString("Note", "No Event Selected")
   end
-else
+  -- Next event details
+  if type(payload.eventNext) == "table" then
+  if index ~= numEvents then
+   setControlString("Next_Event_Title", payload.eventNext.title)
+   setControlString("Next_Note", payload.eventNext.note)
+  else
+   setControlString("Next_Event_Title", "End of Event List")
+   setControlString("Next_Note", "End of Event List")
+  end
+  else
   -- payload.eventNext is nil or not a table (likely JSON null)
-  setControlString("Next_Event_Title", "No Event Selected")
-  setControlString("Next_Note", "No Event Selected")
-end
+   setControlString("Next_Event_Title", "No Event Selected")
+   setControlString("Next_Note", "No Event Selected")
+  end
   -- Timer blinking
-  local isBlinking = payload.message.timer.blink
-  setControlValue("Blink", isBlinking and 1 or 0)
-  if isBlinking then startFlashTimer() else stopFlashTimer() end
+ local currentlyBlinking = false  -- new global variable
+
+-- Timer blinking logic in poll
+local isBlinking = payload.message.timer.blink
+
+
+-- Reflect remote state visually
+Controls.Blink.Value = isBlinking and 1 or 0
+---print("Blink Value =", Controls.Blink.Value)
+-- Only manage flash timer here, not the whole Blink() logic
+if isBlinking == true then
+  currentlyBlinking = true
+  startFlashTimer()
+else
+  currentlyBlinking = false
+  stopFlashTimer()
+end
 
   -- Timer visibility
   local isTimerBlackedOut = payload.message.timer.blackout
@@ -1062,7 +1070,7 @@ end
   setControlString("Current T-Message", payload.message.timer.text)
   setControlString("Current P-Message", payload.message.external)
   setControlValue("P-MessageVis", payload.message.external.visible)
-end
+  end
  function LogFB(data)
     print("LOG DATA", data)
     --Error checking/successful command stuff goes here
@@ -1133,6 +1141,16 @@ end
   ws:Write(minus1_command, false)
   print("sending", minus1_command)
  end
+ Controls["Plus 1"].EventHandler = function ()
+   A1MS = {
+    type = "addtime",
+    payload = 60
+   }
+   -- Convert the Lua table to a JSON string
+  local plus1_command = json.encode(M1MS)
+  ws:Write(plus1_command, false)
+  print("sending", plus1_command)
+ end
  Controls["Plus 5"].EventHandler = function ()
   A5MS = {
    type = "addtime",
@@ -1154,36 +1172,40 @@ end
   print("sending", minus5_command)
  end
  ---vvvvvvvFlashing Blink Logic :|
- function flashButton()
-  Controls.BlinkBlink.Value = (Controls.BlinkBlink.Value == 1) and 0 or 1
-  -- Update the visual appearance of the flashing button based on its value
-  -- You may need to replace the line above with the appropriate code for your UI library
-
-  -- Flash the strings based on the same toggle
-  if Controls.BlinkBlink.Value == 1 then
-      Controls.Neg_Time_Remaining.IsDisabled = true--not Controls.Neg_Time_Remaining.IsDisabled 
-      Controls.Time_Remaining.IsDisabled  = true--not Controls.Time_Remaining.IsDisabled 
-  else
-      Controls.Neg_Time_Remaining.IsDisabled  = false -- Reset the visibility when flashing stops
-      Controls.Time_Remaining.IsDisabled  = false -- Reset the visibility when flashing stops
+function flashButton()
+  if not currentlyBlinking then
+    print("flashButton: skipped (not blinking)")
+    return
   end
- end
- function startFlashTimer()
-  -- Start the timer for flashing
-  delay:Start(.6)
- end
- function stopFlashTimer()
-  -- Stop the flashing timer
-  delay:Stop()
-  Controls.BlinkBlink.Value = 0 -- Reset the visibility when flashing stops
-  Controls.Neg_Time_Remaining.IsDisabled  = false -- Reset the visibility when flashing stops
-  Controls.Time_Remaining.IsDisabled  = false -- Reset the visibility when flashing stops
-   -- Reset the value to 0 when the flashing stops
-  -- Update the visual appearance of the flashing button to its initial state
-  -- You may need to replace the line above with the appropriate code for your UI library
- end
- function Blink()
 
+  print("flashButton running...")
+  Controls.BlinkBlink.Value = (Controls.BlinkBlink.Value == 1) and 0 or 1
+
+  Controls.Time_Remaining.IsDisabled = (Controls.BlinkBlink.Value == 1)
+  Controls.Neg_Time_Remaining.IsDisabled = (Controls.BlinkBlink.Value == 1)
+
+  delay:Start(0.6)
+end
+
+function startFlashTimer()
+  if not currentlyBlinking then
+    currentlyBlinking = true
+    delay:Start(0.6)
+  end
+end
+
+function stopFlashTimer()
+  if currentlyBlinking then
+    currentlyBlinking = false
+    delay:Stop()
+    Controls.BlinkBlink.Value = 0
+    Controls.Time_Remaining.IsDisabled = false
+    Controls.Neg_Time_Remaining.IsDisabled = false
+  end
+end
+
+ function Blink()
+  print("Blink() called. Blink Value =", Controls.Blink.Value)
   if Controls.Blink.Value == 1 then
       -- Start the flashing timer
       Controls.BlinkBlink.Value = 1
@@ -1298,19 +1320,19 @@ end
         print("sending", json_message)
         ws:Write(json_message, false)
   end
- Controls.Blank.EventHandler = function (BlackOut)
-    if Controls.Blank.Boolean
+ Controls.Blank.EventHandler = function ()
+    if Controls.Blank.Value == 1
     then
      BOCMD = {
       type = "message",
       payload = {
         timer ={
-            blackout = false
+            blackout = true
         }
         }
         }
-    Controls.Time_Remaining.IsInvisible = true
-    Controls.Neg_Time_Remaining.IsInvisible = true
+     Controls.Time_Remaining.IsInvisible = true
+     Controls.Neg_Time_Remaining.IsInvisible = true
     else
      BOCMD = {
         type = "message",
@@ -1325,7 +1347,7 @@ end
     local black_command = json.encode(BOCMD)
     ws:Write(black_command, false)
     print("sending", black_command)
- end 
+  end 
 
  Controls.Blink.EventHandler = Blink
  delay.EventHandler = flashButton
@@ -1334,5 +1356,4 @@ end
  --Run At Start
 
  Connect()
-
 end
