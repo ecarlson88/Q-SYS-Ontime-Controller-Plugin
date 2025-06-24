@@ -1044,7 +1044,7 @@ function TimerFB(data)
  local currentlyBlinking = false  -- new global variable
 
 -- Timer blinking logic in poll
-local isBlinking = payload.message.timer.blink
+ local isBlinking = payload.message.timer.blink
 
 
 -- Reflect remote state visually
@@ -1057,14 +1057,17 @@ if isBlinking == true then
 else
   currentlyBlinking = false
   stopFlashTimer()
-end
+ end
 
   -- Timer visibility
-  local isTimerBlackedOut = payload.message.timer.blackout
-  setControlValue("Blank", isTimerBlackedOut)
+local isTimerBlackedOut = payload.message.timer.blackout
+ isCurrentlyBlackedOut = false
+  --print("Software blackout is", isTimerBlackedOut)
+  setControlValue("Blank", isTimerBlackedOut and 1 or 0)
   setControlVisibility("Time_Remaining", not isTimerBlackedOut)
   setControlVisibility("Neg_Time_Remaining", not isTimerBlackedOut)
-
+-- Update the local state variable to stay in sync
+isCurrentlyBlackedOut = isTimerBlackedOut
   -- Message visibility and content
   setControlValue("T-MessageVis", payload.message.timer.visible)
   setControlString("Current T-Message", payload.message.timer.text)
@@ -1139,7 +1142,7 @@ end
    -- Convert the Lua table to a JSON string
   local minus1_command = json.encode(M1MS)
   ws:Write(minus1_command, false)
-  print("sending", minus1_command)
+  print("Minus 1 second sent", minus1_command)
  end
  Controls["Plus 1"].EventHandler = function ()
    A1MS = {
@@ -1147,9 +1150,9 @@ end
     payload = 60
    }
    -- Convert the Lua table to a JSON string
-  local plus1_command = json.encode(M1MS)
+  local plus1_command = json.encode(A1MS)
   ws:Write(plus1_command, false)
-  print("sending", plus1_command)
+  print("Plus 1 second sent", plus1_command)
  end
  Controls["Plus 5"].EventHandler = function ()
   A5MS = {
@@ -1174,7 +1177,7 @@ end
  ---vvvvvvvFlashing Blink Logic :|
 function flashButton()
   if not currentlyBlinking then
-    print("flashButton: skipped (not blinking)")
+    --print("flashButton: skipped (not blinking)")
     return
   end
 
@@ -1205,7 +1208,7 @@ function stopFlashTimer()
 end
 
  function Blink()
-  print("Blink() called. Blink Value =", Controls.Blink.Value)
+  -- print("Blink() called. Blink Value =", Controls.Blink.Value)
   if Controls.Blink.Value == 1 then
       -- Start the flashing timer
       Controls.BlinkBlink.Value = 1
@@ -1321,34 +1324,30 @@ end
         ws:Write(json_message, false)
   end
  Controls.Blank.EventHandler = function ()
-    if Controls.Blank.Value == 1
-    then
-     BOCMD = {
-      type = "message",
-      payload = {
-        timer ={
-            blackout = true
-        }
-        }
-        }
-     Controls.Time_Remaining.IsInvisible = true
-     Controls.Neg_Time_Remaining.IsInvisible = true
-    else
-     BOCMD = {
-        type = "message",
-            payload ={ 
-              timer ={
-                  blackout = false
-            }}}
-     Controls.Time_Remaining.IsInvisible = false
-     Controls.Neg_Time_Remaining.IsInvisible = false
-    end
-    -- Convert the Lua table to a JSON string
-    local black_command = json.encode(BOCMD)
-    ws:Write(black_command, false)
-    print("sending", black_command)
-  end 
+  -- Toggle local blackout state
+  isCurrentlyBlackedOut = not isCurrentlyBlackedOut
 
+  -- Update plugin button state manually
+  Controls.Blank.Value = isCurrentlyBlackedOut and 1 or 0
+
+  -- Update visibility
+  Controls.Time_Remaining.IsInvisible = isCurrentlyBlackedOut
+  Controls.Neg_Time_Remaining.IsInvisible = isCurrentlyBlackedOut
+
+  -- Send command to software
+  local BOCMD = {
+    type = "message",
+    payload = {
+      timer = {
+        blackout = isCurrentlyBlackedOut
+      }
+    }
+  }
+
+  local black_command = json.encode(BOCMD)
+  ws:Write(black_command, false)
+  print("sending", black_command)
+end
  Controls.Blink.EventHandler = Blink
  delay.EventHandler = flashButton
  polltimer.EventHandler = poll
