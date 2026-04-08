@@ -21,7 +21,7 @@ function GetProperties()
   return props
 end
 
-PageNames = { "Timer", "Event", "Messaging", "Info" }
+PageNames = { "Timer", "Event", "Messaging", }
 
 function GetPages(props)
   local pages = {}
@@ -312,7 +312,7 @@ function GetControlLayout(props)
     Fill = {34, 34, 34},
     Radius = 8,
     Position = {5, 5},
-    Size = {600, 295}
+    Size = {600, 330}
   })
 -- Lighter Rear groubox
   table.insert(graphics, {
@@ -673,7 +673,7 @@ function GetControlLayout(props)
       FontSize = 10,
       IsReadOnly = true,
       Position = {157, 89},
-      Size = {395, 25}
+      Size = {380, 25}
     }
     table.insert(graphics, {
       Type = "Text",
@@ -691,7 +691,7 @@ function GetControlLayout(props)
       FontSize = 10,
       IsReadOnly = true,
       Position = {157, 136},
-      Size = {395, 25}
+      Size = {380, 25}
     }
     table.insert(graphics, {
       Type = "Text",
@@ -718,7 +718,7 @@ function GetControlLayout(props)
       FontSize = 10,
       IsReadOnly = true,
       Position = {157, 211},
-      Size = {395, 25}
+      Size = {380, 25}
     }
     layout["Next_Note"] = {
       PrettyName = "Next Event Notes",
@@ -727,7 +727,7 @@ function GetControlLayout(props)
       FontSize = 10,
       IsReadOnly = true,
       Position = {157, 260},
-      Size = {395, 25}
+      Size = {380, 25}
     }
 
   -- ─── Messaging Page ───────────────────────────────────────────────────────
@@ -878,25 +878,6 @@ function GetControlLayout(props)
       UnlinkOffColor = true,
       OffColor = {28, 28, 28}
     }
-
-  -- ─── Info Page ────────────────────────────────────────────────────────────
-  else
-    table.insert(graphics, {
-      Type = "Text",
-      Text = "This plugin controls the Ontime stage timer application via its WebSocket API. You will need Ontime v3 running on a device on the same subnet as the Core. Ontime can be downloaded at https://getontime.no",
-      Position = {150, 60},
-      Size = {400, 220},
-      FontSize = 18,
-      Color = {220, 220, 220},
-      HTextAlign = "Left"
-    })
-    table.insert(graphics, {
-      Type = "Image",
-      Image = Logo,
-      Size = {92, 92},
-      Position = {10, 10}
-    })
-  end
 
   return layout, graphics
 end
