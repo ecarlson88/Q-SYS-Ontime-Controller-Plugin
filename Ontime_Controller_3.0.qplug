@@ -319,7 +319,7 @@ function GetControlLayout(props)
     Fill = {45, 45, 45},
     Radius = 8,
     Position = {100, 55},
-    Size = {490, 235}
+    Size = {490, 241}
   })
   table.insert(graphics, {
     Type = "Image",
@@ -391,25 +391,16 @@ function GetControlLayout(props)
       Color = {220, 220, 220},
       HTextAlign = "Center"
     })
-    -- CUE label
-    table.insert(graphics, {
-      Type = "Text",
-      Text = "CUE #",
-      Position = {115, 70},
-      Size = {42, 20},
-      FontSize = 12,
-      Color = {220, 220, 220},
-      HTextAlign = "Left"
-    })
     layout["Cue"] = {
       PrettyName = "Cue",
       Style = "Text",
       TextBoxStyle = "NoBackground",
       TextColor = {225, 225, 225},
-      Position = {157, 70},
-      Size = {60, 20},
+      Position = {115, 70},
+      Size = {70, 20},
       IsReadOnly = true,
-      FontSize = 12
+      FontSize = 12,
+      HTextAlign = "Left"
     }
     layout["Event_Title"] = {
       PrettyName = "Current Event Title",
@@ -899,7 +890,7 @@ function GetControlLayout(props)
       OffColor = {28, 28, 28}
     }
     layout["P-MessageVis"] = {
-      PrettyName = "Public Message Visible",
+      PrettyName = "Secondary Message Visible",
       Style = "Button",
       Radius = 4,
       StrokeColor = {255, 255, 255},
