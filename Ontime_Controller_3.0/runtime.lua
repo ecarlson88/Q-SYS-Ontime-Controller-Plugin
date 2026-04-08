@@ -114,22 +114,22 @@ if Controls then
       setControlString("Next_Note",        "End of Event List")
     end
 
-    -- Blink state — sync button value and start/stop flash
-    local isBlinking = payload.message.timer.blink == true
+    -- Blink / Blackout / Timer message — guard against nil message fields
+    local timerMsg = payload.message and payload.message.timer
+
+    local isBlinking = timerMsg and timerMsg.blink == true or false
     setControlValue("Blink", isBlinking and 1 or 0)
     if isBlinking then startFlashTimer() else stopFlashTimer() end
 
-    -- Blackout state — sync button value and hide/show timer displays
-    local isBlackedOut = payload.message.timer.blackout == true
+    local isBlackedOut = timerMsg and timerMsg.blackout == true or false
     setControlValue("Blank", isBlackedOut and 1 or 0)
     setVisible("Time_Remaining",     not isBlackedOut)
     setVisible("Neg_Time_Remaining", not isBlackedOut)
 
-    -- Timer message — sync visibility button, feedback field, and text
-    local timerMsgVisible = payload.message.timer.visible == true
+    local timerMsgVisible = timerMsg and timerMsg.visible == true or false
     setControlValue("T-MessageVis", timerMsgVisible and 1 or 0)
     setVisible("Current T-Message", timerMsgVisible)
-    setControlString("Current T-Message", payload.message.timer.text)
+    setControlString("Current T-Message", timerMsg and timerMsg.text or "")
 
     -- Secondary message (message.external removed in Ontime v3; now a plain string)
     setControlString("Current P-Message", payload.message.secondary or "")
@@ -178,11 +178,11 @@ if Controls then
       return
     end
     local tag = msg.tag
-    print("RX tag=" .. tostring(tag))
-    if tag == "log" then
-      LogFB(msg)
-    elseif tag == "runtime-data" then
+    -- "runtime-data" = periodic server push; "poll" = echo of our poll request
+    if tag == "runtime-data" or tag == "poll" then
       TimerFB(msg)
+    elseif tag == "log" then
+      LogFB(msg)
     end
   end
 
