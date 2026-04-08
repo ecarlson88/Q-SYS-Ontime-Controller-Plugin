@@ -26,6 +26,14 @@ if Controls then
     Controls[name].IsInvisible = not isVisible
   end
 
+  -- ─── Send Helper ─────────────────────────────────────────────────────────
+
+  local function send(tbl)
+    local encoded = json.encode(tbl)
+    print("TX: " .. encoded)
+    ws:Write(encoded, false)
+  end
+
   -- ─── Blink / Flash Logic ──────────────────────────────────────────────────
 
   local function flashButton()
@@ -191,60 +199,54 @@ if Controls then
   -- ─── Playback Controls ────────────────────────────────────────────────────
 
   Controls.Play.EventHandler = function()
-    ws:Write(json.encode({ tag = "start" }), false)
+    send({ tag = "start" })
   end
 
   Controls.Pause.EventHandler = function()
-    ws:Write(json.encode({ tag = "pause" }), false)
+    send({ tag = "pause" })
   end
 
   Controls.Restart.EventHandler = function()
-    ws:Write(json.encode({ tag = "reload" }), false)
+    send({ tag = "reload" })
   end
 
   Controls.Next.EventHandler = function()
-    ws:Write(json.encode({ tag = "load", payload = "next" }), false)
+    send({ tag = "load", payload = "next" })
   end
 
   Controls.Previous.EventHandler = function()
-    ws:Write(json.encode({ tag = "load", payload = "previous" }), false)
+    send({ tag = "load", payload = "previous" })
   end
 
   -- ─── Time Adjustments (payloads in milliseconds) ──────────────────────────
 
   Controls["Plus 1"].EventHandler = function()
-    ws:Write(json.encode({ tag = "addtime", payload = 60000 }), false)
+    send({ tag = "addtime", payload = 60000 })
   end
 
   Controls["Minus 1"].EventHandler = function()
-    ws:Write(json.encode({ tag = "addtime", payload = -60000 }), false)
+    send({ tag = "addtime", payload = -60000 })
   end
 
   Controls["Plus 5"].EventHandler = function()
-    ws:Write(json.encode({ tag = "addtime", payload = 300000 }), false)
+    send({ tag = "addtime", payload = 300000 })
   end
 
   Controls["Minus 5"].EventHandler = function()
-    ws:Write(json.encode({ tag = "addtime", payload = -300000 }), false)
+    send({ tag = "addtime", payload = -300000 })
   end
 
   -- ─── Timer Display State ──────────────────────────────────────────────────
 
   Controls.Blink.EventHandler = function()
     local isBlinking = Controls.Blink.Boolean
-    ws:Write(json.encode({
-      tag     = "message",
-      payload = { timer = { blink = isBlinking } }
-    }), false)
+    send({ tag = "message", payload = { timer = { blink = isBlinking } } })
     if isBlinking then startFlashTimer() else stopFlashTimer() end
   end
 
   Controls.Blank.EventHandler = function()
     local isBlackedOut = Controls.Blank.Boolean
-    ws:Write(json.encode({
-      tag     = "message",
-      payload = { timer = { blackout = isBlackedOut } }
-    }), false)
+    send({ tag = "message", payload = { timer = { blackout = isBlackedOut } } })
     setVisible("Time_Remaining",     not isBlackedOut)
     setVisible("Neg_Time_Remaining", not isBlackedOut)
   end
@@ -253,40 +255,28 @@ if Controls then
 
   Controls["T-MessageVis"].EventHandler = function()
     local isVisible = Controls["T-MessageVis"].Boolean
-    ws:Write(json.encode({
-      tag     = "message",
-      payload = { timer = { visible = isVisible } }
-    }), false)
+    send({ tag = "message", payload = { timer = { visible = isVisible } } })
     setVisible("Current T-Message", isVisible)
   end
 
   Controls["P-MessageVis"].EventHandler = function()
     local isVisible = Controls["P-MessageVis"].Boolean
-    ws:Write(json.encode({
-      tag     = "message",
-      payload = { external = { visible = isVisible } }
-    }), false)
+    send({ tag = "message", payload = { external = { visible = isVisible } } })
     setVisible("Current P-Message", isVisible)
   end
 
   Controls["Send TimerMessage"].EventHandler = function()
-    ws:Write(json.encode({
-      tag     = "message",
-      payload = { timer = { text = Controls["TimerMessage"].String } }
-    }), false)
+    send({ tag = "message", payload = { timer = { text = Controls["TimerMessage"].String } } })
   end
 
   Controls["Send PublicMessage"].EventHandler = function()
-    ws:Write(json.encode({
-      tag     = "message",
-      payload = { external = { text = Controls["PublicMessage"].String } }
-    }), false)
+    send({ tag = "message", payload = { external = { text = Controls["PublicMessage"].String } } })
   end
 
   -- ─── Timer Wiring ─────────────────────────────────────────────────────────
 
   polltimer.EventHandler = function()
-    ws:Write(json.encode({ tag = "poll" }), false)
+    send({ tag = "poll" })
   end
 
   delay.EventHandler = flashButton
