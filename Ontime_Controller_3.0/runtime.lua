@@ -36,18 +36,25 @@ if Controls then
 
   -- ─── Blink / Flash Logic ──────────────────────────────────────────────────
 
+  local flashRunning = false
+
   local function flashButton()
     local on = Controls.BlinkBlink.Value == 0
     Controls.BlinkBlink.Value = on and 1 or 0
     Controls.Time_Remaining.IsDisabled     = on
     Controls.Neg_Time_Remaining.IsDisabled = on
+    if flashRunning then delay:Start(0.6) end  -- reschedule next flash
   end
 
   local function startFlashTimer()
-    delay:Start(0.6)
+    if not flashRunning then
+      flashRunning = true
+      delay:Start(0.6)
+    end
   end
 
   local function stopFlashTimer()
+    flashRunning = false
     delay:Stop()
     Controls.BlinkBlink.Value              = 0
     Controls.Time_Remaining.IsDisabled     = false
@@ -57,7 +64,9 @@ if Controls then
   -- ─── Timer Feedback ───────────────────────────────────────────────────────
 
   local function TimerFB(msg)
-    local payload  = msg.payload
+    local payload = msg.payload
+    if not payload or type(payload.timer) ~= "table" then return end
+
     local playback = payload.timer.playback
 
     -- Timer display
@@ -93,8 +102,9 @@ if Controls then
     end
 
     -- Event index (v3 uses rundown, not runtime)
-    local index     = payload.rundown.selectedEventIndex + 1
-    local numEvents = payload.rundown.numEvents
+    local rundown   = payload.rundown or {}
+    local index     = (rundown.selectedEventIndex or 0) + 1
+    local numEvents = rundown.numEvents or 0
     setControlValue("Event_Index", index)
     setControlValue("Event_Total", numEvents)
     setVisible("Event_Index", playback ~= "roll" and playback ~= "stop")
@@ -103,6 +113,7 @@ if Controls then
     if payload.eventNow then
       setControlString("Event_Title", payload.eventNow.title)
       setControlString("Note",        payload.eventNow.note)
+      setControlString("Cue",         payload.eventNow.cue or "")
     end
 
     -- Next event
@@ -131,8 +142,12 @@ if Controls then
     setVisible("Current T-Message", timerMsgVisible)
     setControlString("Current T-Message", timerMsg and timerMsg.text or "")
 
-    -- Secondary message (message.external removed in Ontime v3; now a plain string)
-    setControlString("Current P-Message", payload.message.secondary or "")
+    -- Secondary message: text lives in message.secondary; visibility is timer.secondarySource
+    local secondaryText = (payload.message and payload.message.secondary) or ""
+    setControlString("Current P-Message", secondaryText)
+    -- P-MessageVis reflects whether secondarySource is set to "secondary"
+    local secondarySource = timerMsg and timerMsg.secondarySource
+    setControlValue("P-MessageVis", (secondarySource == "secondary") and 1 or 0)
   end
 
   local function LogFB(msg)
@@ -258,11 +273,18 @@ if Controls then
     setVisible("Current T-Message", isVisible)
   end
 
-  -- P-MessageVis and Send PublicMessage: message.external removed in Ontime v3
-  -- These controls are now no-ops pending a decision on replacement
+  -- P-MessageVis: controls whether secondary message is shown on timer display
+  Controls["P-MessageVis"].EventHandler = function()
+    local src = Controls["P-MessageVis"].Boolean and "secondary" or json.null
+    send({ tag = "message", payload = { timer = { secondarySource = src } } })
+  end
 
   Controls["Send TimerMessage"].EventHandler = function()
     send({ tag = "message", payload = { timer = { text = Controls["TimerMessage"].String } } })
+  end
+
+  Controls["Send PublicMessage"].EventHandler = function()
+    send({ tag = "message", payload = { secondary = Controls["PublicMessage"].String } })
   end
 
   -- ─── Timer Wiring ─────────────────────────────────────────────────────────

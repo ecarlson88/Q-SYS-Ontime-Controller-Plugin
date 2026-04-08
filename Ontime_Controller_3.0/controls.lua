@@ -236,6 +236,14 @@ function GetControls(props)
     PinStyle = "Output"
   })
 
+  table.insert(ctrls, {
+    Name = "Cue",
+    ControlType = "Text",
+    Count = 1,
+    UserPin = true,
+    PinStyle = "Output"
+  })
+
   -- Connection settings
   table.insert(ctrls, {
     Name = "ontime_IP",

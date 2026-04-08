@@ -68,20 +68,23 @@ function GetControlLayout(props)
 
   -- ─── Timer Page ───────────────────────────────────────────────────────────
   if CurrentPage == "Timer" then
+    -- Timer groupbox (taller to fit event title row at bottom)
     table.insert(graphics, {
       Type = "GroupBox",
       Fill = {35, 35, 35},
       Radius = 8,
       Position = {110, 64},
-      Size = {470, 105}
+      Size = {470, 120}
     })
+    -- Controls groupbox (shifted down to match)
     table.insert(graphics, {
       Type = "GroupBox",
       Fill = {35, 35, 35},
       Radius = 8,
-      Position = {110, 176},
+      Position = {110, 191},
       Size = {470, 105}
     })
+    -- Event counter  /
     table.insert(graphics, {
       Type = "Text",
       Text = "/",
@@ -91,6 +94,37 @@ function GetControlLayout(props)
       Color = {220, 220, 220},
       HTextAlign = "Center"
     })
+    -- CUE label
+    table.insert(graphics, {
+      Type = "Text",
+      Text = "CUE #",
+      Position = {115, 70},
+      Size = {42, 20},
+      FontSize = 12,
+      Color = {220, 220, 220},
+      HTextAlign = "Left"
+    })
+    layout["Cue"] = {
+      PrettyName = "Cue",
+      Style = "Text",
+      TextBoxStyle = "NoBackground",
+      TextColor = {225, 225, 225},
+      Position = {157, 70},
+      Size = {60, 20},
+      IsReadOnly = true,
+      FontSize = 12
+    }
+    layout["Event_Title"] = {
+      PrettyName = "Current Event Title",
+      Style = "Text",
+      TextBoxStyle = "NoBackground",
+      TextColor = {200, 200, 200},
+      Position = {208, 152},
+      Size = {260, 20},
+      IsReadOnly = true,
+      FontSize = 12,
+      HTextAlign = "Center"
+    }
     layout["Play"] = {
       PrettyName = "Play",
       Style = "Button",
@@ -98,7 +132,7 @@ function GetControlLayout(props)
       StrokeColor = {47, 133, 90},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {120, 183},
+      Position = {120, 198},
       Size = {90, 45},
       Color = {51, 158, 78},
       UnlinkOffColor = true,
@@ -111,7 +145,7 @@ function GetControlLayout(props)
       StrokeColor = {109, 63, 33},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {210, 183},
+      Position = {210, 198},
       Size = {90, 45},
       Color = {192, 86, 33},
       UnlinkOffColor = true,
@@ -124,7 +158,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {120, 228},
+      Position = {120, 243},
       Size = {90, 45},
       Color = {40, 40, 40},
       UnlinkOffColor = true,
@@ -137,7 +171,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {210, 228},
+      Position = {210, 243},
       Size = {90, 45},
       Color = {40, 40, 40},
       UnlinkOffColor = true,
@@ -150,7 +184,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {424, 182},
+      Position = {424, 197},
       Size = {50, 90},
       Color = {40, 40, 40},
       UnlinkOffColor = true,
@@ -165,7 +199,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {308, 183},
+      Position = {308, 198},
       Size = {55, 45},
       Legend = "-1",
       Color = {51, 158, 78},
@@ -181,7 +215,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {363, 183},
+      Position = {363, 198},
       Size = {55, 45},
       Legend = "+1",
       Color = {51, 158, 78},
@@ -197,7 +231,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {308, 228},
+      Position = {308, 243},
       Size = {55, 45},
       Legend = "-5",
       Color = {51, 158, 78},
@@ -213,7 +247,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {363, 228},
+      Position = {363, 243},
       Size = {55, 45},
       Legend = "+5",
       Color = {51, 158, 78},
@@ -226,7 +260,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {472, 182},
+      Position = {472, 197},
       Size = {50, 90},
       Color = {10, 67, 185},
       UnlinkOffColor = true,
@@ -239,7 +273,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {472, 182},
+      Position = {472, 197},
       Size = {50, 90},
       Color = {0, 0, 0, 0},
       ZOrder = 200
@@ -251,7 +285,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {521, 182},
+      Position = {521, 197},
       Size = {50, 90},
       Color = {10, 67, 185},
       UnlinkOffColor = true,
@@ -262,7 +296,7 @@ function GetControlLayout(props)
       Style = "Text",
       TextBoxStyle = "NoBackground",
       TextColor = {225, 225, 225},
-      Position = {208, 75},
+      Position = {208, 72},
       Size = {260, 75},
       IsReadOnly = true,
       FontSize = 62
@@ -272,7 +306,7 @@ function GetControlLayout(props)
       Style = "Text",
       TextBoxStyle = "NoBackground",
       TextColor = {225, 0, 0},
-      Position = {199, 75},
+      Position = {199, 72},
       Size = {260, 75},
       IsReadOnly = true,
       FontSize = 62
@@ -362,7 +396,7 @@ function GetControlLayout(props)
       FontSize = 10,
       IsReadOnly = true,
       Position = {170, 89},
-      Size = {185, 25}
+      Size = {395, 25}
     }
     table.insert(graphics, {
       Type = "Text",
@@ -380,7 +414,7 @@ function GetControlLayout(props)
       FontSize = 10,
       IsReadOnly = true,
       Position = {170, 136},
-      Size = {185, 25}
+      Size = {395, 25}
     }
     table.insert(graphics, {
       Type = "Text",
@@ -407,7 +441,7 @@ function GetControlLayout(props)
       FontSize = 10,
       IsReadOnly = true,
       Position = {170, 198},
-      Size = {185, 25}
+      Size = {395, 25}
     }
     layout["Next_Note"] = {
       PrettyName = "Next Event Notes",
@@ -416,7 +450,7 @@ function GetControlLayout(props)
       FontSize = 10,
       IsReadOnly = true,
       Position = {170, 247},
-      Size = {185, 25}
+      Size = {395, 25}
     }
 
   -- ─── Messaging Page ───────────────────────────────────────────────────────
@@ -482,18 +516,18 @@ function GetControlLayout(props)
       Size = {40, 31},
       Color = {34, 160, 34}
     }
-    -- Public messaging
+    -- Secondary messaging
     table.insert(graphics, {
       Type = "Text",
-      Text = "Current Public Message",
+      Text = "Current Secondary Message",
       Position = {168, 174},
-      Size = {180, 30},
+      Size = {200, 30},
       FontSize = 14,
       Color = {220, 220, 220},
       HTextAlign = "Left"
     })
     layout["Current P-Message"] = {
-      PrettyName = "Current Public Message",
+      PrettyName = "Current Secondary Message",
       CornerRadius = 6,
       Style = "Text",
       FontSize = 10,
@@ -503,7 +537,7 @@ function GetControlLayout(props)
     }
     table.insert(graphics, {
       Type = "Text",
-      Text = "Set Public Message",
+      Text = "Set Secondary Message",
       Position = {168, 222},
       Size = {180, 30},
       FontSize = 14,
@@ -511,7 +545,7 @@ function GetControlLayout(props)
       HTextAlign = "Left"
     })
     layout["PublicMessage"] = {
-      PrettyName = "Public Message",
+      PrettyName = "Secondary Message",
       CornerRadius = 6,
       Style = "Text",
       FontSize = 10,
@@ -519,7 +553,7 @@ function GetControlLayout(props)
       Size = {180, 25}
     }
     layout["Send PublicMessage"] = {
-      PrettyName = "Send Public Message",
+      PrettyName = "Send Secondary Message",
       Style = "Button",
       Radius = 4,
       StrokeColor = {255, 255, 255},
