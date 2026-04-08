@@ -314,13 +314,30 @@ function GetControlLayout(props)
     Position = {5, 5},
     Size = {600, 295}
   })
+-- Lighter Rear groubox
   table.insert(graphics, {
     Type = "GroupBox",
     Fill = {45, 45, 45},
     Radius = 8,
     Position = {100, 55},
-    Size = {490, 241}
+    Size = {540, 241}
   })
+    -- Top groupbox
+    table.insert(graphics, {
+      Type = "GroupBox",
+      Fill = {35, 35, 35},
+      Radius = 8,
+      Position = {110, 64},
+      Size = {470, 120}
+    })
+    -- Bottom groupbox
+    table.insert(graphics, {
+      Type = "GroupBox",
+      Fill = {35, 35, 35},
+      Radius = 8,
+      Position = {110, 191},
+      Size = {470, 120}
+    })
   table.insert(graphics, {
     Type = "Image",
     Image = Logo,
@@ -365,22 +382,7 @@ function GetControlLayout(props)
 
   -- ─── Timer Page ───────────────────────────────────────────────────────────
   if CurrentPage == "Timer" then
-    -- Timer groupbox (taller to fit event title row at bottom)
-    table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 64},
-      Size = {470, 120}
-    })
-    -- Controls groupbox (shifted down to match)
-    table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 191},
-      Size = {470, 105}
-    })
+
     -- Event counter  /
     table.insert(graphics, {
       Type = "Text",
@@ -396,7 +398,7 @@ function GetControlLayout(props)
       Style = "Text",
       TextBoxStyle = "NoBackground",
       TextColor = {225, 225, 225},
-      Position = {115, 70},
+      Position = {125, 70},
       Size = {70, 20},
       IsReadOnly = true,
       FontSize = 12,
@@ -623,20 +625,7 @@ function GetControlLayout(props)
 
   -- ─── Event Page ───────────────────────────────────────────────────────────
   elseif CurrentPage == "Event" then
-    table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 64},
-      Size = {470, 105}
-    })
-    table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 176},
-      Size = {470, 105}
-    })
+
     table.insert(graphics, {
       Type = "Text",
       Text = "/",
@@ -671,7 +660,7 @@ function GetControlLayout(props)
       Type = "Text",
       Text = "Event Title",
       CornerRadius = 6,
-      Position = {168, 64},
+      Position = {155, 64},
       Size = {120, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -683,13 +672,13 @@ function GetControlLayout(props)
       Style = "Text",
       FontSize = 10,
       IsReadOnly = true,
-      Position = {170, 89},
+      Position = {157, 89},
       Size = {395, 25}
     }
     table.insert(graphics, {
       Type = "Text",
       Text = "Event Notes",
-      Position = {168, 110},
+      Position = {155, 110},
       Size = {120, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -701,13 +690,13 @@ function GetControlLayout(props)
       Style = "Text",
       FontSize = 10,
       IsReadOnly = true,
-      Position = {170, 136},
+      Position = {157, 136},
       Size = {395, 25}
     }
     table.insert(graphics, {
       Type = "Text",
       Text = "Next Event Title",
-      Position = {168, 172},
+      Position = {155, 185},
       Size = {120, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -716,7 +705,7 @@ function GetControlLayout(props)
     table.insert(graphics, {
       Type = "Text",
       Text = "Next Event Notes",
-      Position = {168, 222},
+      Position = {155, 235},
       Size = {125, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -728,7 +717,7 @@ function GetControlLayout(props)
       Style = "Text",
       FontSize = 10,
       IsReadOnly = true,
-      Position = {170, 198},
+      Position = {157, 211},
       Size = {395, 25}
     }
     layout["Next_Note"] = {
@@ -737,26 +726,13 @@ function GetControlLayout(props)
       Style = "Text",
       FontSize = 10,
       IsReadOnly = true,
-      Position = {170, 247},
+      Position = {157, 260},
       Size = {395, 25}
     }
 
   -- ─── Messaging Page ───────────────────────────────────────────────────────
   elseif CurrentPage == "Messaging" then
-    table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 64},
-      Size = {470, 105}
-    })
-    table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 176},
-      Size = {470, 105}
-    })
+
     -- Timer messaging
     table.insert(graphics, {
       Type = "Text",
