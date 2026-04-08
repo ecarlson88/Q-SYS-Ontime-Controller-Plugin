@@ -18,10 +18,17 @@ end
 
 function GetProperties()
   local props = {}
+  table.insert(props, {
+    Name = "page_index",
+    Type = "integer",
+    Min = 1,
+    Max = #PageNames,
+    Value = 1
+  })
   return props
 end
 
-PageNames = { "Timer", "Event", "Messaging", }
+PageNames = { "Timer", "Event", "Messaging" }
 
 function GetPages(props)
   local pages = {}
@@ -314,7 +321,7 @@ function GetControlLayout(props)
     Position = {5, 5},
     Size = {600, 330}
   })
- -- Lighter Rear groubox
+  -- Lighter inner background
   table.insert(graphics, {
     Type = "GroupBox",
     Fill = {45, 45, 45},
@@ -322,22 +329,22 @@ function GetControlLayout(props)
     Position = {100, 55},
     Size = {490, 260}
   })
-    -- Top groupbox
-    table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 64},
-      Size = {470, 120}
-    })
-    -- Bottom groupbox
-    table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 191},
-      Size = {470, 120}
-    })
+  -- Top content groupbox (shared across all pages)
+  table.insert(graphics, {
+    Type = "GroupBox",
+    Fill = {35, 35, 35},
+    Radius = 8,
+    Position = {110, 64},
+    Size = {470, 120}
+  })
+  -- Bottom content groupbox (shared across all pages)
+  table.insert(graphics, {
+    Type = "GroupBox",
+    Fill = {35, 35, 35},
+    Radius = 8,
+    Position = {110, 191},
+    Size = {470, 120}
+  })
   table.insert(graphics, {
     Type = "Image",
     Image = Logo,
@@ -382,7 +389,6 @@ function GetControlLayout(props)
 
   -- ─── Timer Page ───────────────────────────────────────────────────────────
   if CurrentPage == "Timer" then
-
     -- Event counter  /
     table.insert(graphics, {
       Type = "Text",
@@ -398,7 +404,7 @@ function GetControlLayout(props)
       Style = "Text",
       TextBoxStyle = "NoBackground",
       TextColor = {225, 225, 225},
-      Position = {125, 70},
+      Position = {115, 70},
       Size = {70, 20},
       IsReadOnly = true,
       FontSize = 12,
@@ -422,7 +428,7 @@ function GetControlLayout(props)
       StrokeColor = {47, 133, 90},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {120, 205},
+      Position = {120, 198},
       Size = {90, 45},
       Color = {51, 158, 78},
       UnlinkOffColor = true,
@@ -435,7 +441,7 @@ function GetControlLayout(props)
       StrokeColor = {109, 63, 33},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {210, 205},
+      Position = {210, 198},
       Size = {90, 45},
       Color = {192, 86, 33},
       UnlinkOffColor = true,
@@ -448,7 +454,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {120, 250},
+      Position = {120, 243},
       Size = {90, 45},
       Color = {40, 40, 40},
       UnlinkOffColor = true,
@@ -461,7 +467,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {210, 250},
+      Position = {210, 243},
       Size = {90, 45},
       Color = {40, 40, 40},
       UnlinkOffColor = true,
@@ -474,7 +480,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {424, 205},
+      Position = {424, 197},
       Size = {50, 90},
       Color = {40, 40, 40},
       UnlinkOffColor = true,
@@ -489,7 +495,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {308, 205},
+      Position = {308, 198},
       Size = {55, 45},
       Legend = "-1",
       Color = {51, 158, 78},
@@ -505,7 +511,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {363, 205},
+      Position = {363, 198},
       Size = {55, 45},
       Legend = "+1",
       Color = {51, 158, 78},
@@ -521,7 +527,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {308, 250},
+      Position = {308, 243},
       Size = {55, 45},
       Legend = "-5",
       Color = {51, 158, 78},
@@ -537,7 +543,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {363, 250},
+      Position = {363, 243},
       Size = {55, 45},
       Legend = "+5",
       Color = {51, 158, 78},
@@ -550,7 +556,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {472, 205},
+      Position = {472, 197},
       Size = {50, 90},
       Color = {10, 67, 185},
       UnlinkOffColor = true,
@@ -563,7 +569,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {472, 205},
+      Position = {472, 197},
       Size = {50, 90},
       Color = {0, 0, 0, 0},
       ZOrder = 200
@@ -575,7 +581,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {521, 205},
+      Position = {521, 197},
       Size = {50, 90},
       Color = {10, 67, 185},
       UnlinkOffColor = true,
@@ -625,7 +631,6 @@ function GetControlLayout(props)
 
   -- ─── Event Page ───────────────────────────────────────────────────────────
   elseif CurrentPage == "Event" then
-
     table.insert(graphics, {
       Type = "Text",
       Text = "/",
@@ -696,7 +701,7 @@ function GetControlLayout(props)
     table.insert(graphics, {
       Type = "Text",
       Text = "Next Event Title",
-      Position = {155, 185},
+      Position = {155, 191},
       Size = {120, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -705,7 +710,7 @@ function GetControlLayout(props)
     table.insert(graphics, {
       Type = "Text",
       Text = "Next Event Notes",
-      Position = {155, 235},
+      Position = {155, 237},
       Size = {125, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -717,7 +722,7 @@ function GetControlLayout(props)
       Style = "Text",
       FontSize = 10,
       IsReadOnly = true,
-      Position = {157, 211},
+      Position = {157, 216},
       Size = {380, 25}
     }
     layout["Next_Note"] = {
@@ -726,13 +731,12 @@ function GetControlLayout(props)
       Style = "Text",
       FontSize = 10,
       IsReadOnly = true,
-      Position = {157, 260},
+      Position = {157, 263},
       Size = {380, 25}
     }
 
   -- ─── Messaging Page ───────────────────────────────────────────────────────
   elseif CurrentPage == "Messaging" then
-
     -- Timer messaging
     table.insert(graphics, {
       Type = "Text",
@@ -784,7 +788,7 @@ function GetControlLayout(props)
     table.insert(graphics, {
       Type = "Text",
       Text = "Current Secondary Message",
-      Position = {168, 174},
+      Position = {168, 191},
       Size = {200, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -796,13 +800,13 @@ function GetControlLayout(props)
       Style = "Text",
       FontSize = 10,
       IsReadOnly = true,
-      Position = {170, 199},
+      Position = {170, 216},
       Size = {180, 25}
     }
     table.insert(graphics, {
       Type = "Text",
       Text = "Set Secondary Message",
-      Position = {168, 222},
+      Position = {168, 237},
       Size = {180, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -813,7 +817,7 @@ function GetControlLayout(props)
       CornerRadius = 6,
       Style = "Text",
       FontSize = 10,
-      Position = {170, 247},
+      Position = {170, 263},
       Size = {180, 25}
     }
     layout["Send PublicMessage"] = {
@@ -823,7 +827,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {355, 244},
+      Position = {355, 260},
       Size = {40, 31},
       Color = {34, 160, 34}
     }
@@ -872,16 +876,18 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 2,
       ButtonVisualStyle = "Flat",
-      Position = {510, 183},
+      Position = {510, 197},
       Size = {50, 90},
       Color = {10, 67, 185},
       UnlinkOffColor = true,
       OffColor = {28, 28, 28}
     }
 
- end
-return layout, graphics
+  end
+
+  return layout, graphics
 end
+
 if Controls then
 
   -- ─── Setup ────────────────────────────────────────────────────────────────

@@ -15,14 +15,31 @@ function GetControlLayout(props)
     Fill = {34, 34, 34},
     Radius = 8,
     Position = {5, 5},
-    Size = {600, 295}
+    Size = {600, 330}
   })
+  -- Lighter inner background
   table.insert(graphics, {
     Type = "GroupBox",
     Fill = {45, 45, 45},
     Radius = 8,
     Position = {100, 55},
-    Size = {490, 241}
+    Size = {490, 260}
+  })
+  -- Top content groupbox (shared across all pages)
+  table.insert(graphics, {
+    Type = "GroupBox",
+    Fill = {35, 35, 35},
+    Radius = 8,
+    Position = {110, 64},
+    Size = {470, 120}
+  })
+  -- Bottom content groupbox (shared across all pages)
+  table.insert(graphics, {
+    Type = "GroupBox",
+    Fill = {35, 35, 35},
+    Radius = 8,
+    Position = {110, 191},
+    Size = {470, 120}
   })
   table.insert(graphics, {
     Type = "Image",
@@ -68,22 +85,6 @@ function GetControlLayout(props)
 
   -- ─── Timer Page ───────────────────────────────────────────────────────────
   if CurrentPage == "Timer" then
-    -- Timer groupbox (taller to fit event title row at bottom)
-    table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 64},
-      Size = {470, 120}
-    })
-    -- Controls groupbox (shifted down to match)
-    table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 191},
-      Size = {470, 105}
-    })
     -- Event counter  /
     table.insert(graphics, {
       Type = "Text",
@@ -327,20 +328,6 @@ function GetControlLayout(props)
   -- ─── Event Page ───────────────────────────────────────────────────────────
   elseif CurrentPage == "Event" then
     table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 64},
-      Size = {470, 105}
-    })
-    table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 176},
-      Size = {470, 105}
-    })
-    table.insert(graphics, {
       Type = "Text",
       Text = "/",
       Position = {540, 70},
@@ -374,7 +361,7 @@ function GetControlLayout(props)
       Type = "Text",
       Text = "Event Title",
       CornerRadius = 6,
-      Position = {168, 64},
+      Position = {155, 64},
       Size = {120, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -386,13 +373,13 @@ function GetControlLayout(props)
       Style = "Text",
       FontSize = 10,
       IsReadOnly = true,
-      Position = {170, 89},
-      Size = {395, 25}
+      Position = {157, 89},
+      Size = {380, 25}
     }
     table.insert(graphics, {
       Type = "Text",
       Text = "Event Notes",
-      Position = {168, 110},
+      Position = {155, 110},
       Size = {120, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -404,13 +391,13 @@ function GetControlLayout(props)
       Style = "Text",
       FontSize = 10,
       IsReadOnly = true,
-      Position = {170, 136},
-      Size = {395, 25}
+      Position = {157, 136},
+      Size = {380, 25}
     }
     table.insert(graphics, {
       Type = "Text",
       Text = "Next Event Title",
-      Position = {168, 172},
+      Position = {155, 191},
       Size = {120, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -419,7 +406,7 @@ function GetControlLayout(props)
     table.insert(graphics, {
       Type = "Text",
       Text = "Next Event Notes",
-      Position = {168, 222},
+      Position = {155, 237},
       Size = {125, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -431,8 +418,8 @@ function GetControlLayout(props)
       Style = "Text",
       FontSize = 10,
       IsReadOnly = true,
-      Position = {170, 198},
-      Size = {395, 25}
+      Position = {157, 216},
+      Size = {380, 25}
     }
     layout["Next_Note"] = {
       PrettyName = "Next Event Notes",
@@ -440,26 +427,12 @@ function GetControlLayout(props)
       Style = "Text",
       FontSize = 10,
       IsReadOnly = true,
-      Position = {170, 247},
-      Size = {395, 25}
+      Position = {157, 263},
+      Size = {380, 25}
     }
 
   -- ─── Messaging Page ───────────────────────────────────────────────────────
   elseif CurrentPage == "Messaging" then
-    table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 64},
-      Size = {470, 105}
-    })
-    table.insert(graphics, {
-      Type = "GroupBox",
-      Fill = {35, 35, 35},
-      Radius = 8,
-      Position = {110, 176},
-      Size = {470, 105}
-    })
     -- Timer messaging
     table.insert(graphics, {
       Type = "Text",
@@ -511,7 +484,7 @@ function GetControlLayout(props)
     table.insert(graphics, {
       Type = "Text",
       Text = "Current Secondary Message",
-      Position = {168, 174},
+      Position = {168, 191},
       Size = {200, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -523,13 +496,13 @@ function GetControlLayout(props)
       Style = "Text",
       FontSize = 10,
       IsReadOnly = true,
-      Position = {170, 199},
+      Position = {170, 216},
       Size = {180, 25}
     }
     table.insert(graphics, {
       Type = "Text",
       Text = "Set Secondary Message",
-      Position = {168, 222},
+      Position = {168, 237},
       Size = {180, 30},
       FontSize = 14,
       Color = {220, 220, 220},
@@ -540,7 +513,7 @@ function GetControlLayout(props)
       CornerRadius = 6,
       Style = "Text",
       FontSize = 10,
-      Position = {170, 247},
+      Position = {170, 263},
       Size = {180, 25}
     }
     layout["Send PublicMessage"] = {
@@ -550,7 +523,7 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 1,
       ButtonVisualStyle = "Flat",
-      Position = {355, 244},
+      Position = {355, 260},
       Size = {40, 31},
       Color = {34, 160, 34}
     }
@@ -599,30 +572,13 @@ function GetControlLayout(props)
       StrokeColor = {255, 255, 255},
       StrokeWidth = 2,
       ButtonVisualStyle = "Flat",
-      Position = {510, 183},
+      Position = {510, 197},
       Size = {50, 90},
       Color = {10, 67, 185},
       UnlinkOffColor = true,
       OffColor = {28, 28, 28}
     }
 
-  -- ─── Info Page ────────────────────────────────────────────────────────────
-  else
-    table.insert(graphics, {
-      Type = "Text",
-      Text = "This plugin controls the Ontime stage timer application via its WebSocket API. You will need Ontime v3 running on a device on the same subnet as the Core. Ontime can be downloaded at https://getontime.no",
-      Position = {150, 60},
-      Size = {400, 220},
-      FontSize = 18,
-      Color = {220, 220, 220},
-      HTextAlign = "Left"
-    })
-    table.insert(graphics, {
-      Type = "Image",
-      Image = Logo,
-      Size = {92, 92},
-      Position = {10, 10}
-    })
   end
 
   return layout, graphics
