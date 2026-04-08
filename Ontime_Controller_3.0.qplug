@@ -1025,11 +1025,8 @@ if Controls then
     setVisible("Current T-Message", timerMsgVisible)
     setControlString("Current T-Message", payload.message.timer.text)
 
-    -- Public message — sync visibility button, feedback field, and text
-    local pubMsgVisible = payload.message.external.visible == true
-    setControlValue("P-MessageVis", pubMsgVisible and 1 or 0)
-    setVisible("Current P-Message", pubMsgVisible)
-    setControlString("Current P-Message", payload.message.external.text)
+    -- Secondary message (message.external removed in Ontime v3; now a plain string)
+    setControlString("Current P-Message", payload.message.secondary or "")
   end
 
   local function LogFB(msg)
@@ -1071,12 +1068,14 @@ if Controls then
   ws.Data = function(_, data)
     local msg = json.decode(data)
     if msg == nil then
-      print("WS: failed to decode message")
+      print("RX: failed to decode message")
       return
     end
-    if msg.type == "ontime-log" then
+    local tag = msg.tag
+    print("RX tag=" .. tostring(tag))
+    if tag == "log" then
       LogFB(msg)
-    elseif msg.type == "poll" then
+    elseif tag == "runtime-data" then
       TimerFB(msg)
     end
   end
@@ -1153,24 +1152,17 @@ if Controls then
     setVisible("Current T-Message", isVisible)
   end
 
-  Controls["P-MessageVis"].EventHandler = function()
-    local isVisible = Controls["P-MessageVis"].Boolean
-    send({ tag = "message", payload = { external = { visible = isVisible } } })
-    setVisible("Current P-Message", isVisible)
-  end
+  -- P-MessageVis and Send PublicMessage: message.external removed in Ontime v3
+  -- These controls are now no-ops pending a decision on replacement
 
   Controls["Send TimerMessage"].EventHandler = function()
     send({ tag = "message", payload = { timer = { text = Controls["TimerMessage"].String } } })
   end
 
-  Controls["Send PublicMessage"].EventHandler = function()
-    send({ tag = "message", payload = { external = { text = Controls["PublicMessage"].String } } })
-  end
-
   -- ─── Timer Wiring ─────────────────────────────────────────────────────────
 
   polltimer.EventHandler = function()
-    send({ tag = "poll" })
+    ws:Write(json.encode({ tag = "poll" }), false)  -- silent poll, no print
   end
 
   delay.EventHandler = flashButton
