@@ -314,7 +314,7 @@ function GetControlLayout(props)
     Position = {5, 5},
     Size = {600, 330}
   })
--- Lighter Rear groubox
+ -- Lighter Rear groubox
   table.insert(graphics, {
     Type = "GroupBox",
     Fill = {45, 45, 45},
@@ -879,8 +879,8 @@ function GetControlLayout(props)
       OffColor = {28, 28, 28}
     }
 
-  return layout, graphics
-end
+ end
+return layout, graphics
 end
 if Controls then
 
