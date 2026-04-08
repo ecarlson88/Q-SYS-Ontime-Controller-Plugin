@@ -881,7 +881,7 @@ function GetControlLayout(props)
 
   return layout, graphics
 end
-
+end
 if Controls then
 
   -- ─── Setup ────────────────────────────────────────────────────────────────
