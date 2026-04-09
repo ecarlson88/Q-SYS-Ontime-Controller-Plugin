@@ -147,7 +147,9 @@ if Controls then
     setControlString("Current P-Message", secondaryText)
     -- P-MessageVis reflects whether secondarySource is set to "secondary"
     local secondarySource = timerMsg and timerMsg.secondarySource
-    setControlValue("P-MessageVis", (secondarySource == "secondary") and 1 or 0)
+    local pubMsgVisible = (secondarySource == "secondary")
+    setControlValue("P-MessageVis", pubMsgVisible and 1 or 0)
+    setVisible("Current P-Message", pubMsgVisible)
   end
 
   local function LogFB(msg)
@@ -193,8 +195,8 @@ if Controls then
       return
     end
     local tag = msg.tag
-    -- "runtime-data" = periodic server push; "poll" = echo of our poll request
-    if tag == "runtime-data" or tag == "poll" then
+    -- Only process server-initiated pushes; ignore poll echo (can carry stale data)
+    if tag == "runtime-data" then
       TimerFB(msg)
     elseif tag == "log" then
       LogFB(msg)
@@ -275,8 +277,10 @@ if Controls then
 
   -- P-MessageVis: controls whether secondary message is shown on timer display
   Controls["P-MessageVis"].EventHandler = function()
-    local src = Controls["P-MessageVis"].Boolean and "secondary" or json.null
+    local isVisible = Controls["P-MessageVis"].Boolean
+    local src = isVisible and "secondary" or json.null
     send({ tag = "message", payload = { timer = { secondarySource = src } } })
+    setVisible("Current P-Message", isVisible)
   end
 
   Controls["Send TimerMessage"].EventHandler = function()
