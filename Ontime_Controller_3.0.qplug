@@ -336,7 +336,7 @@ function GetControlLayout(props)
     Fill = {35, 35, 35},
     Radius = 8,
     Position = {110, 191},
-    Size = {470, 120}
+    Size = {470, 110}
   })
   table.insert(graphics, {
     Type = "Image",
